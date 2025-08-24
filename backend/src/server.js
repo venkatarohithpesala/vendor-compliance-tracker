@@ -1,13 +1,13 @@
 import app from "./app.js";
-import sequlize from "./config/db.js";
+import sequelize from "./config/db.js";
 
 const PORT = process.env.PORT;
 
 (async () => {
     try {
         // Database Connection
-        await sequlize.authenticate();
-        console.log("Mysql Connected Successfully");
+        await sequelize.authenticate();
+        console.log("MySql Connected Successfully");
 
         //Start server
         app.listen(PORT, () => {
