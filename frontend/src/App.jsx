@@ -1,10 +1,16 @@
+import { useState } from "react";
+import Login from "./pages/Login";
+import ProtectedPage from "./pages/ProtectedPage";
+
 function App() {
-  return (
-   <div className="p-10">
-    <h1 className="text-4xl font-bold text-blue-800 uppercase text-center">
-      Vendor Compliance Tracker
-    </h1>
-   </div>
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  return isAuthenticated ? (
+    <ProtectedPage setIsAuthenticated={setIsAuthenticated} />
+  ) : (
+    <Login setIsAuthenticated={setIsAuthenticated} />
   );
 }
 
