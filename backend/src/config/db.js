@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
     process.env.DB_USER, // Username
     process.env.DB_PASS, // Password
     {
-        host:process.DB_HOST, // Host, e.g., localhost
+        host: process.env.DB_HOST, // Host, e.g., localhost
         dialect: "mysql",     // Database type
         logging: false,       // Disable SQL logging
     }
