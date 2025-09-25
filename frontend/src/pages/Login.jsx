@@ -9,8 +9,7 @@ function Login({ setIsAuthenticated }) {
     e.preventDefault();
     try {
       const res = await API.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      setIsAuthenticated(true);
+  setIsAuthenticated(true);
     } catch (err) {
       alert("Login failed");
     }

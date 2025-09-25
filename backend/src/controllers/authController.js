@@ -31,7 +31,16 @@ export const login = async(req, res) => {
             {expiresIn: "1d"}
         );
         
-        res.status({token, user: {id: user.id, name: user.name, email: user.email, role: user.role}});
+        // Set JWT as HTTP-only cookie
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production", // use true in production
+          sameSite: "strict",
+          maxAge: 24 * 60 * 60 * 1000 // 1 day
+        });
+
+      // Send user info only
+      res.status(200).json({user: {id: user.id, name: user.name, email: user.email, role: user.role}});
     } catch (error) {
         res.status(500).json({error: error.message});
     }
