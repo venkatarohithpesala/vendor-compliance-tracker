@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "../api/api";
 import { FaLock, FaEnvelope, FaUserLock } from 'react-icons/fa';
+import { showToast } from '../utils/toast';
 
 function Login({ setIsAuthenticated, setUser }) {
   const [email, setEmail] = useState("");
@@ -8,12 +9,30 @@ function Login({ setIsAuthenticated, setUser }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
     try {
       const res = await API.post("/auth/login", { email, password });
       setIsAuthenticated(true);
       setUser(res.data.user);
+      showToast.success('Successfully logged in!');
     } catch (err) {
-      alert("Login failed");
+      
+      // Handle different types of errors
+      if (!navigator.onLine) {
+        showToast.error('Please check your internet connection');
+      } else if (err.code === 'ERR_NETWORK') {
+        showToast.error('Unable to connect to the server. Please make sure the server is running.');
+      } else if (err.response?.status === 401) {
+        showToast.error('Invalid email or password');
+      } else if (err.response?.status === 404) {
+        showToast.error('User not found');
+      } else if (err.response?.status === 403) {
+        showToast.error('Account is locked. Please contact administrator');
+      } else if (err.response?.data?.message) {
+        showToast.error(err.response.data.message);
+      } else {
+        showToast.error('An unexpected error occurred. Please try again later.');
+      }
     }
   };
 
