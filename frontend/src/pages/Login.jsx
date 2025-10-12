@@ -18,19 +18,19 @@ function Login({ setIsAuthenticated, setUser }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-sky-400 via-blue-500 to-blue-600">
+    <div className="flex items-center justify-center min-h-screen" style={{ background: `linear-gradient(135deg, #faedcd 0%, #d4a373 100%)` }}>
       <div className="relative w-full max-w-md px-6 pt-16">
         {/* Logo or Icon could go here */}
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg">
-            <FaUserLock className="h-12 w-12 text-blue-500" />
+            <FaUserLock className="h-12 w-12" style={{ color: '#5e0b15' }} />
           </div>
         </div>
         
         <form onSubmit={handleLogin} className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 pt-20 space-y-6">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Welcome Back!</h1>
-            <p className="text-gray-600 text-sm mt-2">Please sign in to your account</p>
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#90323d] to-[#5e0b15] bg-clip-text text-transparent">WELCOME BACK!</h1>
+            <p className="text-gray-600 text-sm mt-3">Please sign in to your account</p>
           </div>
           
           <div className="space-y-4">
@@ -43,7 +43,8 @@ function Login({ setIsAuthenticated, setUser }) {
                 <input
                   type="email"
                   placeholder="name@company.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:border-transparent outline-none transition-all"
+                  style={{ '--tw-ring-color': '#5e0b15' }}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -60,7 +61,8 @@ function Login({ setIsAuthenticated, setUser }) {
                 <input
                   type="password"
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:border-transparent outline-none transition-all"
+                  style={{ '--tw-ring-color': '#5e0b15' }}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -71,22 +73,27 @@ function Login({ setIsAuthenticated, setUser }) {
 
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center">
-              <input type="checkbox" className="h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300 rounded" />
+              <input type="checkbox" className="h-4 w-4 border-gray-300 rounded" style={{ color: '#d4a373', '--tw-ring-color': '#d4a373' }} />
               <label className="ml-2 text-gray-600">Remember me</label>
             </div>
-            <a href="#" className="text-blue-500 hover:text-blue-600 font-medium">Forgot password?</a>
+             <a href="#" className="font-medium transition-colors" style={{ color: '#90323d', ':hover': { color: '#5e0b15' } }}>Forgot password?</a>
           </div>
           
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl px-4 py-3 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            className="w-full text-white rounded-xl px-6 py-3.5 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden group"
+            style={{ 
+              background: `linear-gradient(45deg, #90323d, #5e0b15)`,
+              textShadow: '0 1px 1px rgba(0,0,0,0.2)'
+            }}
           >
+            <div className="absolute inset-0 bg-white/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
             Sign in
           </button>
           
           <div className="text-center text-sm text-gray-600 mt-4">
             Not registered yet?{" "}
-            <a href="#" className="text-blue-500 hover:text-blue-600 font-medium">
+           <a href="#" className="font-medium transition-colors" style={{ color: '#90323d', ':hover': { color: '#ba8a5c' } }}>
               Contact administrator
             </a>
           </div>
