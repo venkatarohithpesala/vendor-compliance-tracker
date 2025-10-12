@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API from "../api/api";
 
-function Login({ setIsAuthenticated }) {
+function Login({ setIsAuthenticated, setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -9,7 +9,8 @@ function Login({ setIsAuthenticated }) {
     e.preventDefault();
     try {
       const res = await API.post("/auth/login", { email, password });
-  setIsAuthenticated(true);
+      setIsAuthenticated(true);
+      setUser(res.data.user);
     } catch (err) {
       alert("Login failed");
     }
