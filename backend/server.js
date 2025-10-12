@@ -1,23 +1,23 @@
 import app from "./src/app.js";
-import sequelize from "./src/config/db.js";
+import { initializeDatabase } from "./src/database/init.js";
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const PORT = process.env.PORT;
 
 (async () => {
   try {
-    // Database Connection
-    await sequelize.authenticate();
-    console.log("MySql Connected Successfully");
+    // Initialize database (includes connection, sync, and seeding)
+    await initializeDatabase();
 
-    // Sync models: create tables if they don't exist
-    await sequelize.sync({ alter: false }); // alter: false avoids destructive changes
-    console.log("All tables Created Successfully");
-
-    //Start server
+    // Start server
     app.listen(PORT, () => {
-      console.log(`Server running at ${PORT}`);
+      console.log(`Server running at http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error("Database Connection Failed", error);
+    console.error('Server initialization failed:', error);
+    process.exit(1);
   }
 })();
