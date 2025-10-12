@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { ToastContainer } from 'react-toastify';
 import API from "./api/api";
 import Login from "./pages/Login";
-import ProtectedPage from "./pages/ProtectedPage";
+import Home from "./pages/Home";
 
 function App() {
 
@@ -68,7 +68,7 @@ function App() {
           path="/home"
           element={
             isAuthenticated ? (
-              <ProtectedPage user={user} setIsAuthenticated={setIsAuthenticated} />
+              <Home user={user} setIsAuthenticated={setIsAuthenticated} />
             ) : (
               <Navigate to="/login" replace />
             )
