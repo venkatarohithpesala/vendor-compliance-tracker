@@ -1,0 +1,15 @@
+.Toastify__toast {
+    border: none !important;
+    background: white !important;
+    padding: 16px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.Toastify__toast-body {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.Toastify__progress-bar {
+    height: 3px !important;
+}
