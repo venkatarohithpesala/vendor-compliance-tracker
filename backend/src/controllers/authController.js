@@ -46,3 +46,25 @@ export const login = async(req, res) => {
     }
 };
 
+// Check authentication status
+export const checkAuth = async (req, res) => {
+    try {
+        // If we get here, it means the auth middleware validated the token
+        const user = await User.findByPk(req.user.id, {
+            attributes: ['id', 'name', 'email', 'role'] // Exclude sensitive fields
+        });
+        
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        return res.json({
+            user,
+            authenticated: true
+        });
+    } catch (error) {
+        console.error('Auth check error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
