@@ -3,7 +3,7 @@ import API from "../api/api";
 import { FaLock, FaEnvelope, FaUserLock } from 'react-icons/fa';
 import { showToast } from '../utils/toast';
 
-function Login({ setIsAuthenticated, setUser }) {
+function Login({ checkAuth }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,9 +11,8 @@ function Login({ setIsAuthenticated, setUser }) {
     e.preventDefault();
     
     try {
-      const res = await API.post("/auth/login", { email, password });
-      setIsAuthenticated(true);
-      setUser(res.data.user);
+      await API.post("/auth/login", { email, password });
+      await checkAuth(); // This will set the authentication state
       showToast.success('Successfully logged in!');
     } catch (err) {
       

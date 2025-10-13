@@ -7,34 +7,34 @@ import Home from "./pages/Home";
 
 function App() {
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);   // Initialize authentication state as false
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);  // Start with loading false since we don't have a token
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-    // Only check authentication if we think we might be authenticated
-    if (document.cookie.includes('token')) {
-      API.get("/auth/check")
-        .then((res) => {
-          if (res.data.authenticated) {
-            setIsAuthenticated(true);
-            setUser(res.data.user);
-          } else {
-            setIsAuthenticated(false);
-            setUser(null);
-          }
-        })
-        .catch(() => {
-          setIsAuthenticated(false);
-          setUser(null);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      // If no token exists, immediately set loading to false
-      setLoading(false);
+  const checkAuth = async () => {
+    try {
+      const response = await API.get('/auth/check');
+      setIsAuthenticated(true);
+      setUser(response.data.user);
+    } catch (error) {
+      if (error.response?.status !== 401) {
+        console.warn('Auth check failed:', error);
+      }
+      setIsAuthenticated(false);
+      setUser(null);
     }
+  };
+
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        await checkAuth();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
   }, []);
 
   if (loading) return <div>Loading...</div>;
@@ -60,7 +60,7 @@ function App() {
             isAuthenticated ? (
               <Navigate to="/home" replace />
             ) : (
-              <Login setIsAuthenticated={setIsAuthenticated} setUser={setUser} />
+              <Login checkAuth={checkAuth} />
             )
           }
         />
