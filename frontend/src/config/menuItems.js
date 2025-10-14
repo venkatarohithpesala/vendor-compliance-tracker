@@ -20,6 +20,66 @@ import {
 } from "react-icons/fa";
 
 export const menuItems = {
+  super_admin: [
+    {
+      title: "Dashboard",
+      path: "/dashboard",
+      icon: FaChartPie,
+    },
+    {
+      title: "Companies",
+      icon: FaBuilding,
+      children: [
+        { title: "All Companies", path: "/companies", icon: FaListAlt },
+        { title: "Add Company", path: "/companies/add", icon: FaUserPlus },
+        { title: "Company Status", path: "/companies/status", icon: FaClipboardCheck },
+      ],
+    },
+    {
+      title: "Company Admins",
+      icon: FaUserShield,
+      children: [
+        { title: "All Admins", path: "/admins", icon: FaUsers },
+        { title: "Add Admin", path: "/admins/add", icon: FaUserPlus },
+        { title: "Admin Activity", path: "/admins/activity", icon: FaClipboardCheck },
+      ],
+    },
+    {
+      title: "System Settings",
+      icon: FaCog,
+      children: [
+        { 
+          title: "Document Types", 
+          path: "/settings/document-types", 
+          icon: FaFileContract 
+        },
+        { 
+          title: "Email Templates", 
+          path: "/settings/email-templates", 
+          icon: FaEnvelopeOpenText 
+        },
+        { 
+          title: "System Configuration", 
+          path: "/settings/configuration", 
+          icon: FaTools 
+        },
+      ],
+    },
+    {
+      title: "Reports",
+      icon: FaChartBar,
+      children: [
+        { title: "Company Reports", path: "/reports/companies", icon: FaBuilding },
+        { title: "Admin Reports", path: "/reports/admins", icon: FaUserShield },
+        { title: "System Reports", path: "/reports/system", icon: FaChartPie },
+      ],
+    },
+    {
+      title: "Audit Logs",
+      path: "/audit-logs",
+      icon: FaClipboardCheck,
+    },
+  ],
   admin: [
     {
       title: "Dashboard",
