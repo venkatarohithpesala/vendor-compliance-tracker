@@ -3,7 +3,17 @@ import User from '../../models/User.js';
 
 export async function seedAdminUser() {
     try {
-        // Check if admin already exists
+        // Get the super admin to set as creator
+        const superAdmin = await User.findOne({
+            where: { role: 'super_admin' }
+        });
+
+        if (!superAdmin) {
+            console.log('Super admin must exist before creating admin');
+            return;
+        }
+
+        // Check if test admin already exists
         const existingAdmin = await User.findOne({
             where: { email: process.env.ADMIN_EMAIL }
         });
@@ -16,13 +26,14 @@ export async function seedAdminUser() {
             );
 
             await User.create({
-                name: 'System Administrator',
+                name: 'Company Administrator',
                 email: process.env.ADMIN_EMAIL,
                 password: hashedPassword,
-                role: 'admin'
+                role: 'admin',
+                createdById: superAdmin.id
             });
 
-        } 
+        }
     } catch (error) {
         console.error('Error seeding admin user:', error);
         throw error;
