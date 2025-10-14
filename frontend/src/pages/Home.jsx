@@ -15,7 +15,7 @@ function Home({ user, setIsAuthenticated }) {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar role={user?.role || 'admin'} />
+      {user?.role && <Sidebar role={user.role} />}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">

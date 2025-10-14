@@ -4,7 +4,11 @@ import { FaAngleDown, FaBars } from "react-icons/fa";
 import { menuItems } from "../config/menuItems";
 import "../styles/scrollbar.css";
 
-function Sidebar({ role = "admin" }) {
+function Sidebar({ role }) {
+  if (!role || !menuItems[role]) {
+    console.error('Invalid role or menu items not found for role:', role);
+    return null;
+  }
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState({});
   const [isCollapsed, setIsCollapsed] = useState(() => {
