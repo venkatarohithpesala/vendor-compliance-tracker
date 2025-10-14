@@ -9,7 +9,6 @@ function Home({ user, setIsAuthenticated }) {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
-    showToast.info('Logged out successfully');
     navigate('/login');
   };
 

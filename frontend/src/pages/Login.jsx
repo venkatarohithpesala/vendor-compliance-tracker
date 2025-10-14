@@ -13,7 +13,6 @@ function Login({ checkAuth }) {
     try {
       await API.post("/auth/login", { email, password });
       await checkAuth(); // This will set the authentication state
-      showToast.success('Successfully logged in!');
     } catch (err) {
       
       // Handle different types of errors
