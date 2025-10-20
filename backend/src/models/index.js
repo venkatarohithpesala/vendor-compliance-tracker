@@ -1,5 +1,6 @@
 import User from './User.js';
 import Company from './Company.js';
+import Email from './Email.js';
 
 // Define relationships
 const initializeModels = () => {
@@ -14,4 +15,4 @@ const initializeModels = () => {
     });
 };
 
-export { User, Company, initializeModels };
+export { User, Company, Email, initializeModels };
