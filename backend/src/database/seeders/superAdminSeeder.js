@@ -13,7 +13,7 @@ export const seedSuperAdmin = async () => {
             
             const superAdmin = await User.create({
                 name: 'System Administrator',
-                email: 'superadmin',
+                email: 'superadmin@gmail.com',
                 password: hashedPassword,
                 role: 'super_admin',
                 createdAt: new Date(),
