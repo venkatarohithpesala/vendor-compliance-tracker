@@ -20,12 +20,8 @@ const Company = sequelize.define("Company", {
         defaultValue: "active",
     },
     createdBy: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
-        references: {
-            model: 'Users',
-            key: 'id'
-        }
     },
     createdAt: {
         type: DataTypes.DATE,

@@ -4,6 +4,8 @@ import { ToastContainer } from 'react-toastify';
 import API from "./api/api";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import AddCompany from "./pages/companies/AddCompany";
+import Layout from "./components/Layout";
 
 function App() {
 
@@ -69,6 +71,18 @@ function App() {
           element={
             isAuthenticated ? (
               <Home user={user} setIsAuthenticated={setIsAuthenticated} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/companies/add"
+          element={
+            isAuthenticated ? (
+              <Layout title="Add New Company">
+                <AddCompany />
+              </Layout>
             ) : (
               <Navigate to="/login" replace />
             )
