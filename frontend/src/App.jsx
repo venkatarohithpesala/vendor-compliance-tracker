@@ -80,7 +80,7 @@ function App() {
           path="/companies/add"
           element={
             isAuthenticated ? (
-              <Layout title="Add New Company">
+              <Layout title="Add New Company" user={user} setIsAuthenticated={setIsAuthenticated}>
                 <AddCompany />
               </Layout>
             ) : (
