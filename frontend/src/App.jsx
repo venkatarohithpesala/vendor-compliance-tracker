@@ -6,6 +6,9 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import AddCompany from "./pages/companies/AddCompany";
 import CompaniesList from "./pages/companies/CompaniesList";
+import AdminsList from "./pages/admins/AdminsList";
+import AddAdmin from "./pages/admins/AddAdmin";
+import AcceptInvite from "./pages/admins/AcceptInvite";
 import Layout from "./components/Layout";
 
 function App() {
@@ -58,12 +61,16 @@ function App() {
       />
       <Routes>
         <Route
+          path="/accept-invite/:token"
+          element={<AcceptInvite />}
+        />
+        <Route
           path="/login"
           element={
             isAuthenticated ? (
               <Navigate to="/home" replace />
             ) : (
-              <Login checkAuth={checkAuth} />
+              <Login setIsAuthenticated={setIsAuthenticated} setUser={setUser} />
             )
           }
         />
@@ -71,7 +78,9 @@ function App() {
           path="/home"
           element={
             isAuthenticated ? (
-              <Home user={user} setIsAuthenticated={setIsAuthenticated} />
+              <Layout title="Dashboard" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <Home user={user} />
+              </Layout>
             ) : (
               <Navigate to="/login" replace />
             )
@@ -95,6 +104,30 @@ function App() {
             isAuthenticated ? (
               <Layout title="Companies" user={user} setIsAuthenticated={setIsAuthenticated}>
                 <CompaniesList />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/admins"
+          element={
+            isAuthenticated ? (
+              <Layout title="Admins" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <AdminsList />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/admins/add"
+          element={
+            isAuthenticated ? (
+              <Layout title="Add Admin" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <AddAdmin />
               </Layout>
             ) : (
               <Navigate to="/login" replace />
