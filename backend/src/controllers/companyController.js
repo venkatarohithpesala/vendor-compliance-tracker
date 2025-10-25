@@ -1,4 +1,5 @@
 import Company from "../models/Company.js";
+import User from "../models/User.js";
 
 // Create a new company (only super_admin)
 export const createCompany = async (req, res) => {
@@ -169,5 +170,97 @@ export const updateCompanyStatus = async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error. Please try again." });
+  }
+};
+
+// Assign admin to company (only super_admin)
+export const assignAdminToCompany = async (req, res) => {
+  const { id } = req.params; // company id
+  const { adminId } = req.body;
+
+  try {
+    // Authorization check: only super_admin can assign admins
+    if (req.user.role !== "super_admin") {
+      return res
+        .status(403)
+        .json({
+          message: "Access denied. Only super_admin can assign admins to companies.",
+        });
+    }
+
+    // Validation: adminId is required
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required." });
+    }
+
+    // Find the company
+    const company = await Company.findByPk(id);
+    if (!company) {
+      return res.status(404).json({ message: "Company not found." });
+    }
+
+    // Find the admin user
+    const admin = await User.findByPk(adminId);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin user not found." });
+    }
+
+    // Check if user is an admin
+    if (admin.role !== "admin") {
+      return res.status(400).json({ message: "User must be an admin to be assigned to a company." });
+    }
+
+    // Assign the admin to the company
+    admin.companyId = id;
+    await admin.save();
+
+    // Return success response
+    res.json({
+      message: "Admin assigned to company successfully.",
+      assignment: {
+        companyId: company.id,
+        companyName: company.name,
+        adminId: admin.id,
+        adminName: admin.name,
+        adminEmail: admin.email,
+      },
+    });
+  } catch (error) {
+    console.error("Error assigning admin to company:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error. Please try again." });
+  }
+};
+
+// Get available admins (not assigned to any company)
+export const getAvailableAdmins = async (req, res) => {
+  try {
+    // Authorization check: only super_admin can view available admins
+    if (req.user.role !== "super_admin") {
+      return res
+        .status(403)
+        .json({
+          message: "Access denied. Only super_admin can view available admins.",
+        });
+    }
+
+    // Get admins not assigned to any company
+    const availableAdmins = await User.findAll({
+      where: {
+        role: "admin",
+        companyId: null, // Not assigned to any company
+      },
+      attributes: ["id", "name", "email"],
+      order: [["name", "ASC"]],
+    });
+
+    res.json({
+      admins: availableAdmins,
+      total: availableAdmins.length,
+    });
+  } catch (error) {
+    console.error("Error fetching available admins:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
