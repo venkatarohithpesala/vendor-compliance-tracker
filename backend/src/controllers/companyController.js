@@ -118,3 +118,56 @@ export const getCompanies = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+// Update company status (only super_admin)
+export const updateCompanyStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Authorization check: only super_admin can update company status
+    if (req.user.role !== "super_admin") {
+      return res
+        .status(403)
+        .json({
+          message: "Access denied. Only super_admin can update company status.",
+        });
+    }
+
+    // Validation: status is required and must be valid
+    if (!status || !["active", "inactive"].includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "Status must be 'active' or 'inactive'." });
+    }
+
+    // Find the company
+    const company = await Company.findByPk(id);
+    if (!company) {
+      return res.status(404).json({ message: "Company not found." });
+    }
+
+    // Update the status
+    company.status = status;
+    await company.save();
+
+    // Return success response
+    res.json({
+      message: "Company status updated successfully.",
+      company: {
+        id: company.id,
+        name: company.name,
+        website: company.website,
+        status: company.status,
+        createdByEmail: company.createdBy,
+        createdAt: company.createdAt,
+        updatedAt: company.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating company status:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error. Please try again." });
+  }
+};
