@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to VenTrack - Admin Invitation</title>
+    <style>
+        /* Email Template Width Strategy:
+         * - Desktop: Fixed 600px max-width, centered
+         * - Tablet (640px and below): Full width with 10px margins
+         * - Mobile (480px and below): Full width with 8px margins
+         * - All devices: Responsive padding and content scaling
+         */
+
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            width: 100%;
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo h1 {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo .tagline {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 40px 30px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-section h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .welcome-section .role-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #4a5568;
+            margin-bottom: 24px;
+        }
+
+        .intro-text {
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        /* Invitation Details Card */
+        .invite-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+            position: relative;
+        }
+
+        .invite-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .invite-card h3 {
+            color: #1a1a1a;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-left: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 120px;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #1a1a1a;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .password-code {
+            background: #1a1a1a;
+            color: #00ff88;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* CTA Button */
+        .cta-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .cta-text {
+            font-size: 16px;
+            color: #4a5568;
+            margin: 16px 0;
+        }
+
+        /* Security Notice */
+        .security-notice {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 32px 0;
+            position: relative;
+        }
+
+        .security-notice::before {
+            content: '⚠️';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+        }
+
+        .security-notice h4 {
+            color: #92400e;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-left: 28px;
+        }
+
+        .security-notice ul {
+            color: #78350f;
+            font-size: 14px;
+            line-height: 1.6;
+            padding-left: 28px;
+        }
+
+        .security-notice li {
+            margin-bottom: 6px;
+        }
+
+        /* Capabilities Section */
+        .capabilities {
+            margin: 40px 0;
+        }
+
+        .capabilities h3 {
+            color: #1a1a1a;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .capabilities ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .capabilities li {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4a5568;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .capabilities li::before {
+            content: '✓';
+            position: absolute;
+            left: 16px;
+            top: 12px;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Support Section */
+        .support-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 32px 0;
+        }
+
+        .support-section h4 {
+            color: #1a1a1a;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .support-section p {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .url-display {
+            background: #1a1a1a;
+            color: #00ff88;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            border: 1px solid #374151;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: #9ca3af;
+            padding: 24px 30px;
+            text-align: center;
+        }
+
+        .footer .brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .footer p {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .footer .divider {
+            height: 1px;
+            background: #374151;
+            margin: 16px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .email-container {
+                width: calc(100% - 20px);
+                max-width: 100%;
+                margin: 0 10px;
+                border-radius: 12px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .logo h1 {
+                font-size: 28px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .welcome-section h2 {
+                font-size: 24px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .detail-label {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .cta-button {
+                width: 100%;
+                padding: 14px 24px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .email-container {
+                width: calc(100% - 16px);
+                margin: 0 8px;
+                border-radius: 8px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .content {
+                padding: 24px 16px;
+            }
+
+            .invite-card {
+                padding: 20px;
+            }
+
+            .detail-row {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <h1>VenTrack</h1>
+                <p class="tagline">Secure. Compliant. Simple.</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <h2>Welcome to VenTrack!</h2>
+                <p>You've been invited to join as a <span class="role-badge">Company Administrator</span></p>
+            </div>
+
+            <!-- Greeting and Intro -->
+            <div class="greeting">
+                Hello <strong>{{adminName}}</strong>,
+            </div>
+
+            <div class="intro-text">
+                You have been invited by <strong>{{inviterName}}</strong> to join VenTrack as a Company Administrator. This role will allow you to manage vendor compliance for your assigned company.
+            </div>
+
+            <!-- Invitation Details -->
+            <div class="invite-card">
+                <h3>Invitation Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Invited by:</span>
+                    <span class="detail-value">{{inviterName}} ({{inviterEmail}})</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Role:</span>
+                    <span class="detail-value">Company Administrator</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Temp Password:</span>
+                    <span class="detail-value"><span class="password-code">{{tempPassword}}</span></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Expires:</span>
+                    <span class="detail-value">{{expiresAt}}</span>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <p class="cta-text">To get started, please click the button below to accept your invitation and set up your account:</p>
+                <a href="{{inviteUrl}}" class="cta-button">
+                    Accept Invitation & Set Password
+                </a>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="security-notice">
+                <h4>Important Security Information</h4>
+                <ul>
+                    <li>Use the temporary password above to log in for the first time</li>
+                    <li>You will be required to change your password immediately after login</li>
+                    <li>This invitation link will expire in 24 hours for your security</li>
+                    <li>If you did not expect this invitation, please ignore this email</li>
+                </ul>
+            </div>
+
+            <!-- Capabilities -->
+            <div class="capabilities">
+                <h3>What you can do as a Company Administrator:</h3>
+                <ul>
+                    <li>Manage vendor compliance data</li>
+                    <li>Handle document uploads and tracking</li>
+                    <li>Oversee user access within your company</li>
+                    <li>Generate compliance reports</li>
+                    <li>Configure company-specific settings</li>
+                </ul>
+            </div>
+
+            <!-- Help Text -->
+            <div class="intro-text">
+                If you have any questions about your role or need assistance getting started, please don't hesitate to reach out to your system administrator.
+            </div>
+
+            <!-- Support Section -->
+            <div class="support-section">
+                <h4>Need Help?</h4>
+                <p>If the button above doesn't work, you can copy and paste this link into your browser:</p>
+                <div class="url-display">{{inviteUrl}}</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="brand">VenTrack</div>
+            <p>Vendor Compliance Tracking System</p>
+            <div class="divider"></div>
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>If you have questions, contact your system administrator.</p>
+        </div>
+    </div>
+</body>
+</html>
