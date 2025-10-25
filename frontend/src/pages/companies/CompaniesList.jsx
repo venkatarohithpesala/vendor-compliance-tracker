@@ -6,6 +6,8 @@ import {
   FaPlus,
   FaCheckCircle,
   FaTimesCircle,
+  FaToggleOn,
+  FaToggleOff,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import {
@@ -59,18 +61,25 @@ function CompaniesList() {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) =>
-        row.original.status === "active" ? (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            <FaCheckCircle className="w-3 h-3" />
-            Active
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-            <FaTimesCircle className="w-3 h-3" />
-            Inactive
-          </span>
-        ),
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => toggleCompanyStatus(row.original.id, row.original.status)}
+            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
+              row.original.status === "active"
+                ? "bg-green-100 text-green-800 hover:bg-green-200"
+                : "bg-red-100 text-red-800 hover:bg-red-200"
+            }`}
+          >
+            {row.original.status === "active" ? (
+              <FaToggleOn className="w-4 h-4" />
+            ) : (
+              <FaToggleOff className="w-4 h-4" />
+            )}
+            {row.original.status === "active" ? "Active" : "Inactive"}
+          </button>
+        </div>
+      ),
     },
     {
       accessorKey: "createdByEmail",
@@ -130,6 +139,29 @@ function CompaniesList() {
       console.error("Fetch companies error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleCompanyStatus = async (companyId, currentStatus) => {
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    try {
+      const response = await API.put(`/companies/${companyId}/status`, {
+        status: newStatus,
+      });
+      // Update the local state
+      setCompanies((prev) =>
+        prev.map((company) =>
+          company.id === companyId
+            ? { ...company, status: newStatus }
+            : company
+        )
+      );
+      showToast.success(`Company status updated to ${newStatus}`);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to update company status";
+      showToast.error(errorMessage);
+      console.error("Toggle status error:", error);
     }
   };
 
