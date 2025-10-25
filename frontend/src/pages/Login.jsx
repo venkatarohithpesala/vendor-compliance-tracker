@@ -3,7 +3,7 @@ import API from "../api/api";
 import { FaLock, FaEnvelope, FaUserLock } from 'react-icons/fa';
 import { showToast } from '../utils/toast';
 
-function Login({ checkAuth }) {
+function Login({ setIsAuthenticated, setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -12,7 +12,9 @@ function Login({ checkAuth }) {
     
     try {
       await API.post("/auth/login", { email, password });
-      await checkAuth(); // This will set the authentication state
+      
+      // Redirect to home - App.jsx will check authentication and update state
+      window.location.href = '/home';
     } catch (err) {
       
       // Handle different types of errors
