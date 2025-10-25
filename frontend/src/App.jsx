@@ -5,6 +5,7 @@ import API from "./api/api";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import AddCompany from "./pages/companies/AddCompany";
+import CompaniesList from "./pages/companies/CompaniesList";
 import Layout from "./components/Layout";
 
 function App() {
@@ -82,6 +83,18 @@ function App() {
             isAuthenticated ? (
               <Layout title="Add New Company" user={user} setIsAuthenticated={setIsAuthenticated}>
                 <AddCompany />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/companies"
+          element={
+            isAuthenticated ? (
+              <Layout title="Companies" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <CompaniesList />
               </Layout>
             ) : (
               <Navigate to="/login" replace />
