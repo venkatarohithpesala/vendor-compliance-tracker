@@ -1,0 +1,305 @@
+import { useState, useEffect } from "react";
+import {
+  FaBuilding,
+  FaGlobe,
+  FaEye,
+  FaPlus,
+  FaCheckCircle,
+  FaTimesCircle,
+} from "react-icons/fa";
+import { Link } from "react-router-dom";
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import API from "../../api/api";
+import { showToast } from "../../utils/toast";
+
+function CompaniesList() {
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  const columns = [
+    {
+      accessorKey: "name",
+      header: "Company",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white">
+            <FaBuilding className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-medium text-gray-900">{row.original.name}</div>
+            <div className="text-sm text-gray-500">ID: {row.original.id}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "website",
+      header: "Website",
+      cell: ({ row }) =>
+        row.original.website ? (
+          <a
+            href={row.original.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+          >
+            <FaGlobe className="w-4 h-4" />
+            {row.original.website.replace(/^https?:\/\//, "")}
+          </a>
+        ) : (
+          <span className="text-gray-400">-</span>
+        ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) =>
+        row.original.status === "active" ? (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <FaCheckCircle className="w-3 h-3" />
+            Active
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <FaTimesCircle className="w-3 h-3" />
+            Inactive
+          </span>
+        ),
+    },
+    {
+      accessorKey: "createdByEmail",
+      header: "Created By",
+      cell: ({ row }) => (
+        <span className="text-sm text-gray-600">
+          {row.original.createdByEmail}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) => (
+        <span className="text-sm text-gray-600">
+          {new Date(row.original.createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: () => (
+        <button className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 hover:bg-[#90323d]/5 text-[#90323d] hover:text-[#5e0b15] font-medium rounded-lg transition-all duration-200 border border-gray-200 hover:border-[#90323d]/20">
+          <FaEye className="w-4 h-4" />
+          View
+        </button>
+      ),
+    },
+  ];
+
+  const table = useReactTable({
+    data: companies,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
+
+  const fetchCompanies = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get("/companies");
+      setCompanies(response.data.companies);
+      setError(null);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to load companies";
+      setError(errorMessage);
+      showToast.error(errorMessage);
+      console.error("Fetch companies error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#90323d]"></div>
+        <span className="ml-2 text-gray-600">Loading companies...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-500 mb-4">
+          <FaTimesCircle className="w-12 h-12 mx-auto mb-2" />
+          <p className="text-lg font-medium">Error Loading Companies</p>
+          <p className="text-sm">{error}</p>
+        </div>
+        <button
+          onClick={fetchCompanies}
+          className="px-4 py-2 bg-[#90323d] text-white rounded-lg hover:bg-[#5e0b15] transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white">
+            <FaBuilding className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-[#5e0b15]">Companies</h1>
+            <p className="text-gray-600 mt-1">
+              Manage all companies in the system
+            </p>
+          </div>
+        </div>
+
+        <Link
+          to="/companies/add"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+        >
+          <FaPlus className="w-4 h-4" />
+          Add Company
+        </Link>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-blue-100">
+              <FaBuilding className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Total Companies
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {companies.length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-green-100">
+              <FaCheckCircle className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Active Companies
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {companies.filter((c) => c.status === "active").length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-red-100">
+              <FaTimesCircle className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Inactive Companies
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {companies.filter((c) => c.status === "inactive").length}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Companies Grid */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {companies.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="p-4 rounded-full bg-gray-100 w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+              <FaBuilding className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No companies yet
+            </h3>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              Get started by creating your first company to begin managing
+              vendor compliance
+            </p>
+            <Link
+              to="/companies/add"
+              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white font-semibold rounded-xl hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            >
+              <FaPlus className="w-5 h-5" />
+              Create First Company
+            </Link>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="hover:bg-gray-50">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default CompaniesList;
