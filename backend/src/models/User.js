@@ -40,6 +40,28 @@ const User = sequelize.define("User", {
             key: 'id'
         }
     },
+    inviteToken: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'invite_token'
+    },
+    inviteExpires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'invite_expires'
+    },
+    inviteStatus: {
+        type: DataTypes.ENUM('pending', 'accepted', 'expired'),
+        defaultValue: null,
+        allowNull: true,
+        field: 'invite_status'
+    },
+    passwordResetRequired: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+        field: 'password_reset_required'
+    },
     createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

@@ -13,6 +13,27 @@ const initializeModels = () => {
     User.belongsTo(Company, {
         foreignKey: 'companyId'
     });
+
+    // User self-referencing relationships
+    User.belongsTo(User, {
+        foreignKey: 'createdBy',
+        as: 'creator'
+    });
+
+    User.hasMany(User, {
+        foreignKey: 'createdBy',
+        as: 'createdUsers'
+    });
+
+    User.belongsTo(User, {
+        foreignKey: 'updatedBy',
+        as: 'updater'
+    });
+
+    User.hasMany(User, {
+        foreignKey: 'updatedBy',
+        as: 'updatedUsers'
+    });
 };
 
 export { User, Company, Email, initializeModels };
