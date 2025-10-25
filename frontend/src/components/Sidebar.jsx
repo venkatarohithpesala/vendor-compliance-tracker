@@ -6,7 +6,7 @@ import "../styles/scrollbar.css";
 
 function Sidebar({ role }) {
   if (!role || !menuItems[role]) {
-    console.error('Invalid role or menu items not found for role:', role);
+    console.error("Invalid role or menu items not found for role:", role);
     return null;
   }
   const location = useLocation();
@@ -19,6 +19,21 @@ function Sidebar({ role }) {
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
   }, [isCollapsed]);
+
+  useEffect(() => {
+    const newOpenMenus = { ...openMenus };
+    menuItems[role]?.forEach((item) => {
+      if (item.children) {
+        const hasActiveChild = item.children.some((child) =>
+          isActive(child.path)
+        );
+        if (hasActiveChild) {
+          newOpenMenus[item.title] = true;
+        }
+      }
+    });
+    setOpenMenus(newOpenMenus);
+  }, [location.pathname, role]);
 
   const toggleSidebar = () => {
     setIsCollapsed((prev) => !prev);
@@ -131,7 +146,7 @@ function Sidebar({ role }) {
         isCollapsed ? "w-16" : "w-64"
       } h-screen flex flex-col transition-all duration-300`}
       style={{
-        background: "linear-gradient(135deg, #90323d 0%, #5e0b15 100%)",
+        background: "#5e0b15",
       }}
     >
       {/* Header */}
