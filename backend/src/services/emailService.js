@@ -1,5 +1,5 @@
-import { createModuleLogger } from '../utils/loggerFactory';
-import { emailQueue } from '../config/emailQueue';
+import { createModuleLogger } from '../utils/loggerFactory.js';
+import emailQueue from '../config/emailQueue.js';
 import { Email } from '../models/index.js';
 import 'dotenv/config';
 

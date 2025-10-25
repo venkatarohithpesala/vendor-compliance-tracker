@@ -1,21 +1,46 @@
+import dotenv from 'dotenv';
 import Queue from 'bull';
-import 'dotenv/config';
-import { createModuleLogger } from '../utils/loggerFactory';
+import { createModuleLogger } from '../utils/loggerFactory.js';
+
+// Load environment variables
+dotenv.config();
 
 const logger = createModuleLogger(import.meta.url);
 
+// Validate required Redis environment variables
+const requiredEnvVars = ['REDIS_HOST', 'REDIS_PORT'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+    console.error('Missing required Redis environment variables:', missingVars);
+    console.error('Please set the following environment variables:');
+    missingVars.forEach(varName => console.error(`  - ${varName}`));
+    process.exit(1);
+}
+
+// Redis configuration - no defaults for production safety
+const redisConfig = {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT),
+    password: process.env.REDIS_PASSWORD, 
+    prefix: process.env.REDIS_PREFIX , 
+    // Add retry strategy for Redis connection
+    retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+    }
+};
+
+// Validate Redis port is a valid number
+if (isNaN(redisConfig.port) || redisConfig.port < 1 || redisConfig.port > 65535) {
+    console.error('Invalid REDIS_PORT:', process.env.REDIS_PORT, '- must be a valid port number (1-65535)');
+    process.exit(1);
+}
+
+console.log(`Redis connected: ${redisConfig.host}:${redisConfig.port}`);
+
 const emailQueue = new Queue('emailQueue', {
-    redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
-        password: process.env.REDIS_PASSWORD,
-        prefix: `${process.env.REDIS_PREFIX}email:`,
-        // Add retry strategy for Redis connection
-        retryStrategy: (times) => {
-            const delay = Math.min(times * 50, 2000);
-            return delay;
-        }
-    },
+    redis: redisConfig,
     limiter: {
         max: 2, // max 2 jobs per
         duration: 1000 // 1 second

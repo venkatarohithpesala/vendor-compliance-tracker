@@ -1,13 +1,15 @@
-import { createModuleLogger } from '../utils/loggerFactory';
-import { emailQueue } from '../config/emailQueue';
+import dotenv from 'dotenv';
+import { createModuleLogger } from '../utils/loggerFactory.js';
+import emailQueue from '../config/emailQueue.js';
 import { Email } from '../models/index.js';
-import { getConfig, loadConfigsFromDB } from '../services/configService';
 import nodemailer from 'nodemailer';
 import sgMail from '@sendgrid/mail';
 import { promises as fs } from 'fs';
 import path from 'path';
 import Handlebars from 'handlebars';
-import 'dotenv/config';
+
+// Load environment variables
+dotenv.config();
 
 const logger = createModuleLogger(import.meta.url);
 
@@ -17,12 +19,9 @@ logger.info('Email worker started');
 emailQueue.process(async (job) => {
     const { emailId, to, subject, template, context } = job.data;
 
-    // Refresh configs for each job
-    await loadConfigsFromDB();
-
     // Get email provider configuration
-    const provider = (await getConfig('EMAIL_PROVIDER')) || 'smtp';
-    const emailFrom = await getConfig('EMAIL_FROM');
+    const provider = process.env.EMAIL_PROVIDER;
+    const emailFrom = process.env.EMAIL_FROM;
 
     try {
         // Update email status to processing
@@ -93,9 +92,9 @@ async function renderTemplate(templateName, context) {
     }
 }
 
+// Helper function for SendGrid
 async function sendWithSendgrid(to, from, subject, html) {
-    const sendgridApiKey = await getConfig('SENDGRID_API_KEY');
-    sgMail.setApiKey(sendgridApiKey);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     const msg = {
         to,
@@ -110,15 +109,13 @@ async function sendWithSendgrid(to, from, subject, html) {
 
 // Helper function for SMTP
 async function sendWithSMTP(to, from, subject, html) {
-    const host = await getConfig('MAILSERVER_HOST');
-    const port = Number(await getConfig('MAILSERVER_PORT'));
-    const user = await getConfig('MAILSERVER_USER');
-    const pass = await getConfig('MAILSERVER_PASS');
-
     const transporter = nodemailer.createTransport({
-        host,
-        port,
-        auth: { user, pass }
+        host: process.env.MAILSERVER_HOST,
+        port: Number(process.env.MAILSERVER_PORT),
+        auth: {
+            user: process.env.MAILSERVER_USER,
+            pass: process.env.MAILSERVER_PASS
+        }
     });
 
     const info = await transporter.sendMail({
