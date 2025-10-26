@@ -22,6 +22,11 @@ function CompaniesList() {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [availableAdmins, setAvailableAdmins] = useState([]);
+  const [selectedAdminId, setSelectedAdminId] = useState("");
+  const [assignLoading, setAssignLoading] = useState(false);
 
 
   const columns = [
@@ -106,11 +111,20 @@ function CompaniesList() {
     {
       id: "actions",
       header: "Actions",
-      cell: () => (
-        <button className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 hover:bg-[#90323d]/5 text-[#90323d] hover:text-[#5e0b15] font-medium rounded-lg transition-all duration-200 border border-gray-200 hover:border-[#90323d]/20">
-          <FaEye className="w-4 h-4" />
-          View
-        </button>
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <button className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 hover:bg-[#90323d]/5 text-[#90323d] hover:text-[#5e0b15] font-medium rounded-lg transition-all duration-200 border border-gray-200 hover:border-[#90323d]/20">
+            <FaEye className="w-4 h-4" />
+            View
+          </button>
+          <button
+            onClick={() => openAssignModal(row.original)}
+            className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 font-medium rounded-lg transition-all duration-200 border border-blue-200 hover:border-blue-300"
+          >
+            <FaPlus className="w-4 h-4" />
+            Assign Admin
+          </button>
+        </div>
       ),
     },
   ];
@@ -162,6 +176,49 @@ function CompaniesList() {
         error.response?.data?.message || "Failed to update company status";
       showToast.error(errorMessage);
       console.error("Toggle status error:", error);
+    }
+  };
+
+  const openAssignModal = async (company) => {
+    setSelectedCompany(company);
+    setSelectedAdminId("");
+    setShowAssignModal(true);
+    // Fetch available admins
+    try {
+      const response = await API.get("/companies/available-admins");
+      setAvailableAdmins(response.data.admins);
+    } catch (error) {
+      showToast.error("Failed to load available admins");
+      console.error("Fetch admins error:", error);
+    }
+  };
+
+  const closeAssignModal = () => {
+    setShowAssignModal(false);
+    setSelectedCompany(null);
+    setAvailableAdmins([]);
+    setSelectedAdminId("");
+  };
+
+  const assignAdmin = async () => {
+    if (!selectedAdminId) {
+      showToast.error("Please select an admin");
+      return;
+    }
+    setAssignLoading(true);
+    try {
+      const response = await API.put(`/companies/${selectedCompany.id}/assign-admin`, {
+        adminId: selectedAdminId,
+      });
+      showToast.success("Admin assigned successfully");
+      closeAssignModal();
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to assign admin";
+      showToast.error(errorMessage);
+      console.error("Assign admin error:", error);
+    } finally {
+      setAssignLoading(false);
     }
   };
 
@@ -330,6 +387,59 @@ function CompaniesList() {
           </div>
         )}
       </div>
+
+      {/* Assign Admin Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Assign Admin to {selectedCompany?.name}
+              </h3>
+              <button
+                onClick={closeAssignModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <FaTimesCircle className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Admin
+              </label>
+              <select
+                value={selectedAdminId}
+                onChange={(e) => setSelectedAdminId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#90323d] focus:border-transparent"
+              >
+                <option value="">Choose an admin...</option>
+                {availableAdmins.map((admin) => (
+                  <option key={admin.id} value={admin.id}>
+                    {admin.name} ({admin.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={closeAssignModal}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={assignAdmin}
+                disabled={assignLoading || !selectedAdminId}
+                className="px-4 py-2 bg-[#90323d] text-white font-medium rounded-lg hover:bg-[#5e0b15] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {assignLoading ? "Assigning..." : "Assign Admin"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
