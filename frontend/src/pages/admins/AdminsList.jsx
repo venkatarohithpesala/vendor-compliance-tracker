@@ -288,36 +288,37 @@ function AdminsList() {
                       {formatDate(admin.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <Link
-                          to={`/admins/edit/${admin.id}`}
-                          className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 font-medium rounded-lg transition-all duration-200"
-                        >
-                          <FaEdit className="w-4 h-4" />
-                          Edit
-                        </Link>
+                      <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleAssignClick(admin)}
-                          className="inline-flex items-center gap-2 px-3 py-1 bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-800 font-medium rounded-lg transition-all duration-200"
+                          className={`p-2 rounded-lg transition-all duration-200 ${
+                            admin.companyId
+                              ? 'text-orange-600 hover:text-orange-800 hover:bg-orange-50'
+                              : 'text-green-600 hover:text-green-800 hover:bg-green-50'
+                          }`}
+                          title={admin.companyId ? 'Unassign from Company' : 'Assign to Company'}
                         >
                           {admin.companyId ? (
-                            <>
-                              <FaUnlink className="w-4 h-4" />
-                              Unassign
-                            </>
+                            <FaUnlink className="w-4 h-4" />
                           ) : (
-                            <>
-                              <FaLink className="w-4 h-4" />
-                              Assign
-                            </>
+                            <FaLink className="w-4 h-4" />
                           )}
                         </button>
+
+                        <Link
+                          to={`/admins/edit/${admin.id}`}
+                          className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                          title="Edit Admin"
+                        >
+                          <FaEdit className="w-4 h-4" />
+                        </Link>
+
                         <button
                           onClick={() => handleDeleteClick(admin)}
-                          className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 font-medium rounded-lg transition-all duration-200"
+                          className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          title="Delete Admin"
                         >
                           <FaTrash className="w-4 h-4" />
-                          Delete
                         </button>
                       </div>
                     </td>

@@ -8,6 +8,7 @@ import AddCompany from "./pages/companies/AddCompany";
 import CompaniesList from "./pages/companies/CompaniesList";
 import AdminsList from "./pages/admins/AdminsList";
 import AddAdmin from "./pages/admins/AddAdmin";
+import EditAdmin from "./pages/admins/EditAdmin";
 import AcceptInvite from "./pages/admins/AcceptInvite";
 import Layout from "./components/Layout";
 
@@ -128,6 +129,18 @@ function App() {
             isAuthenticated ? (
               <Layout title="Add Admin" user={user} setIsAuthenticated={setIsAuthenticated}>
                 <AddAdmin />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/admins/edit/:id"
+          element={
+            isAuthenticated ? (
+              <Layout title="Edit Admin" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <EditAdmin />
               </Layout>
             ) : (
               <Navigate to="/login" replace />
