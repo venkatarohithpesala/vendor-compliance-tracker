@@ -71,3 +71,20 @@ export const checkAuth = async (req, res) => {
     }
 };
 
+// Logout User
+export const logout = async (req, res) => {
+    try {
+        // Clear the HTTP-only cookie
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        });
+        
+        res.json({ message: "Logged out successfully" });
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+

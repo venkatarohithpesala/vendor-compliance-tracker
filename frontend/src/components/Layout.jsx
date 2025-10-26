@@ -1,14 +1,21 @@
 import { FaBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import API from '../api/api';
 import Sidebar from './Sidebar';
 
 function Layout({ children, title = "Dashboard", user, setIsAuthenticated }) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await API.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Always clear local state and redirect, even if API call fails
+      setIsAuthenticated(false);
+      navigate('/login');
+    }
   };
 
   return (
@@ -41,8 +48,8 @@ function Layout({ children, title = "Dashboard", user, setIsAuthenticated }) {
                     </span>
                   </div>
                   <div className="hidden md:block">
-                    <p className="text-sm font-medium text-gray-700">{user?.name || 'User'}</p>
-                    <p className="text-xs text-gray-500 capitalize">{user?.role || 'Admin'}</p>
+                    <p className="text-sm font-medium text-gray-700">{user?.name}</p>
+                    <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
                   </div>
                   <button
                     onClick={handleLogout}
