@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { Op } from "sequelize";
 import { User, Company, Email } from "../models/index.js";
+import emailQueue from "../config/emailQueue.js";
 
 // Create a new admin user (only super_admin) - INVITE BASED
 export const createAdmin = async (req, res) => {
