@@ -334,14 +334,8 @@ function AdminsList() {
       {showDeleteModal && adminToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Delete Admin</h3>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <FaTrash className="w-6 h-6" />
-              </button>
             </div>
 
             <p className="text-gray-600 mb-6">
@@ -384,16 +378,10 @@ function AdminsList() {
       {showAssignModal && adminToAssign && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200">
               <h3 className="text-xl font-semibold text-gray-900">
                 {adminToAssign.companyId ? 'Unassign' : 'Assign'} Admin to Company
               </h3>
-              <button
-                onClick={() => setShowAssignModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <FaTrash className="w-6 h-6" />
-              </button>
             </div>
 
             <div className="p-6">

@@ -144,7 +144,7 @@ function Sidebar({ role }) {
     <div
       className={`${
         isCollapsed ? "w-16" : "w-64"
-      } h-screen flex flex-col transition-all duration-300`}
+      } sticky top-0 h-screen flex flex-col transition-all duration-300`}
       style={{
         background: "#5e0b15",
       }}

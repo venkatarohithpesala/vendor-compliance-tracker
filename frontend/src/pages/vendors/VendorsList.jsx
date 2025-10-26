@@ -11,6 +11,7 @@ import {
   FaToggleOn,
   FaToggleOff,
   FaTrash,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import {
@@ -25,6 +26,8 @@ function VendorsList() {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [vendorToDelete, setVendorToDelete] = useState(null);
 
   const columns = [
     {
@@ -127,17 +130,19 @@ function VendorsList() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 hover:bg-[#90323d]/5 text-[#90323d] hover:text-[#5e0b15] font-medium rounded-lg transition-all duration-200 border border-gray-200 hover:border-[#90323d]/20">
+        <div className="flex items-center gap-1">
+          <button
+            className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
+            title="View Vendor"
+          >
             <FaEye className="w-4 h-4" />
-            View
           </button>
           <button
-            onClick={() => handleDeleteVendor(row.original.id, row.original.name)}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-medium rounded-lg transition-all duration-200 border border-red-200 hover:border-red-300"
+            onClick={() => handleDeleteClick(row.original)}
+            className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
+            title="Delete Vendor"
           >
             <FaTrash className="w-4 h-4" />
-            Delete
           </button>
         </div>
       ),
@@ -194,15 +199,20 @@ function VendorsList() {
     }
   };
 
-  const handleDeleteVendor = async (vendorId, vendorName) => {
-    if (!window.confirm(`Are you sure you want to delete "${vendorName}"? This action cannot be undone.`)) {
-      return;
-    }
+  const handleDeleteClick = (vendor) => {
+    setVendorToDelete(vendor);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!vendorToDelete) return;
 
     try {
-      await API.delete(`/vendors/${vendorId}`);
-      setVendors((prev) => prev.filter((vendor) => vendor.id !== vendorId));
+      await API.delete(`/vendors/${vendorToDelete.id}`);
+      setVendors((prev) => prev.filter((vendor) => vendor.id !== vendorToDelete.id));
       showToast.success("Vendor deleted successfully");
+      setShowDeleteModal(false);
+      setVendorToDelete(null);
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to delete vendor";
@@ -375,6 +385,37 @@ function VendorsList() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && vendorToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Delete Vendor</h3>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete <strong>{vendorToDelete.name}</strong>?
+              This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete Vendor
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
