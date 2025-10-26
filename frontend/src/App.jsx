@@ -10,6 +10,8 @@ import AdminsList from "./pages/admins/AdminsList";
 import AddAdmin from "./pages/admins/AddAdmin";
 import EditAdmin from "./pages/admins/EditAdmin";
 import AcceptInvite from "./pages/admins/AcceptInvite";
+import VendorsList from "./pages/vendors/VendorsList";
+import AddVendor from "./pages/vendors/AddVendor";
 import Layout from "./components/Layout";
 
 function App() {
@@ -141,6 +143,30 @@ function App() {
             isAuthenticated ? (
               <Layout title="Edit Admin" user={user} setIsAuthenticated={setIsAuthenticated}>
                 <EditAdmin />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/vendors"
+          element={
+            isAuthenticated ? (
+              <Layout title="Vendors" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <VendorsList />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/vendors/add"
+          element={
+            isAuthenticated ? (
+              <Layout title="Add Vendor" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <AddVendor user={user} />
               </Layout>
             ) : (
               <Navigate to="/login" replace />
