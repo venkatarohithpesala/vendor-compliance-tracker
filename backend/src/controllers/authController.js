@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import { User } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -42,7 +42,7 @@ export const login = async(req, res) => {
           maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
         // Send user info only
-        res.status(200).json({user: {id: user.id, name: user.name, email: user.email, role: user.role}});
+        res.status(200).json({user: {id: user.id, name: user.name, email: user.email, role: user.role, companyId: user.companyId}});
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({error: error.message});
@@ -54,7 +54,7 @@ export const checkAuth = async (req, res) => {
     try {
         // If we get here, it means the auth middleware validated the token
         const user = await User.findByPk(req.user.id, {
-            attributes: ['id', 'name', 'email', 'role'] // Exclude sensitive fields
+            attributes: ['id', 'name', 'email', 'role', 'companyId'] 
         });
         
         if (!user) {

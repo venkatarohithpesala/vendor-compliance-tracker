@@ -1,11 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Op } from "sequelize";
-import User from "../models/User.js";
-import Company from "../models/Company.js";
-
-import crypto from "crypto";
-import emailQueue from "../config/emailQueue.js";
-import { Email } from "../models/index.js";
+import { User, Company, Email } from "../models/index.js";
 
 // Create a new admin user (only super_admin) - INVITE BASED
 export const createAdmin = async (req, res) => {
@@ -151,7 +146,6 @@ export const getAdmins = async (req, res) => {
       admins.map(async (admin) => {
         let companyName = null;
         if (admin.companyId) {
-          const Company = (await import("../models/Company.js")).default;
           const company = await Company.findByPk(admin.companyId);
           companyName = company ? company.name : "Unknown Company";
         }

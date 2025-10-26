@@ -1,5 +1,4 @@
-import Company from "../models/Company.js";
-import User from "../models/User.js";
+import { Company, User } from "../models/index.js";
 
 // Create a new company (only super_admin)
 export const createCompany = async (req, res) => {
