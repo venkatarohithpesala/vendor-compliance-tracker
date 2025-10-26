@@ -11,7 +11,8 @@ const initializeModels = () => {
 
     // User belongs to Company
     User.belongsTo(Company, {
-        foreignKey: 'companyId'
+        foreignKey: 'companyId',
+        as: 'company'
     });
 
     // User self-referencing relationships

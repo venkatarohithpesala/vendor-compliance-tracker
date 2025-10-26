@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Op } from "sequelize";
 import User from "../models/User.js";
+import Company from "../models/Company.js";
 
 import crypto from "crypto";
 import emailQueue from "../config/emailQueue.js";
@@ -181,7 +182,7 @@ export const getAdmins = async (req, res) => {
 // Update admin user (only super_admin)
 export const updateAdmin = async (req, res) => {
   const { id } = req.params;
-  const { name, email } = req.body;
+  const { name, email, companyId } = req.body;
 
   try {
     // Authorization check: only super_admin can update admin users
@@ -224,22 +225,46 @@ export const updateAdmin = async (req, res) => {
       }
     }
 
+    // Validate companyId if provided
+    if (companyId !== undefined) {
+      if (companyId !== null) {
+        // Check if company exists
+        const company = await Company.findByPk(companyId);
+        if (!company) {
+          return res.status(404).json({ message: "Company not found." });
+        }
+      }
+      // If companyId is null, we're unassigning the admin
+    }
+
     // Update user
     if (name) admin.name = name.trim();
     if (email) admin.email = email.toLowerCase().trim();
+    if (companyId !== undefined) admin.companyId = companyId;
 
     await admin.save();
+
+    // Get updated user with company info if assigned
+    const updatedAdmin = await User.findByPk(id, {
+      include: [{
+        model: Company,
+        as: 'company',
+        attributes: ['id', 'name'],
+        required: false
+      }]
+    });
 
     // Return updated user
     res.json({
       message: "Admin user updated successfully.",
       user: {
-        id: admin.id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
-        companyId: admin.companyId,
-        updatedAt: admin.updatedAt,
+        id: updatedAdmin.id,
+        name: updatedAdmin.name,
+        email: updatedAdmin.email,
+        role: updatedAdmin.role,
+        companyId: updatedAdmin.companyId,
+        companyName: updatedAdmin.company ? updatedAdmin.company.name : null,
+        updatedAt: updatedAdmin.updatedAt,
       },
     });
   } catch (error) {

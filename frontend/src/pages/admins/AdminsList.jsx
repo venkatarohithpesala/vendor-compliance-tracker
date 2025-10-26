@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaUserPlus, FaEdit, FaTrash, FaBuilding, FaUser, FaExclamationTriangle } from 'react-icons/fa';
+import { FaUserPlus, FaEdit, FaTrash, FaBuilding, FaUser, FaExclamationTriangle, FaLink, FaUnlink } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import API from '../../api/api';
 import { showToast } from '../../utils/toast';
@@ -10,6 +10,12 @@ function AdminsList() {
   const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [adminToDelete, setAdminToDelete] = useState(null);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [adminToAssign, setAdminToAssign] = useState(null);
+  const [companies, setCompanies] = useState([]);
+  const [assignLoading, setAssignLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   useEffect(() => {
     fetchAdmins();
@@ -36,6 +42,63 @@ function AdminsList() {
     setShowDeleteModal(true);
   };
 
+  const handleAssignClick = async (admin) => {
+    setAdminToAssign(admin);
+    setShowAssignModal(true);
+    setSearchTerm('');
+    setSelectedCompany(null);
+
+    // Fetch companies if not already loaded
+    if (companies.length === 0) {
+      try {
+        const response = await API.get('/companies');
+        setCompanies(response.data.companies);
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+        showToast.error('Failed to load companies');
+      }
+    }
+  };
+
+  const handleAssignCompany = async (companyId) => {
+    if (!adminToAssign) return;
+
+    setAssignLoading(true);
+    try {
+      await API.put(`/users/admins/${adminToAssign.id}`, {
+        companyId: companyId || null
+      });
+
+      // Update the admin in the local state
+      setAdmins(prev => prev.map(admin =>
+        admin.id === adminToAssign.id
+          ? {
+              ...admin,
+              companyId: companyId,
+              companyName: companyId
+                ? companies.find(c => c.id === companyId)?.name || null
+                : null
+            }
+          : admin
+      ));
+
+      showToast.success(
+        companyId
+          ? 'Admin assigned to company successfully!'
+          : 'Admin unassigned from company successfully!'
+      );
+
+      setShowAssignModal(false);
+      setAdminToAssign(null);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to update admin assignment';
+      showToast.error(errorMessage);
+      console.error('Assign company error:', error);
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
   const confirmDelete = async () => {
     if (!adminToDelete) return;
 
@@ -51,6 +114,10 @@ function AdminsList() {
       console.error('Delete admin error:', error);
     }
   };
+
+  const filteredCompanies = companies.filter(company =>
+    company.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -230,6 +297,22 @@ function AdminsList() {
                           Edit
                         </Link>
                         <button
+                          onClick={() => handleAssignClick(admin)}
+                          className="inline-flex items-center gap-2 px-3 py-1 bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-800 font-medium rounded-lg transition-all duration-200"
+                        >
+                          {admin.companyId ? (
+                            <>
+                              <FaUnlink className="w-4 h-4" />
+                              Unassign
+                            </>
+                          ) : (
+                            <>
+                              <FaLink className="w-4 h-4" />
+                              Assign
+                            </>
+                          )}
+                        </button>
+                        <button
                           onClick={() => handleDeleteClick(admin)}
                           className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 font-medium rounded-lg transition-all duration-200"
                         >
@@ -291,6 +374,205 @@ function AdminsList() {
               >
                 Delete Admin
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Assign Company Modal */}
+      {showAssignModal && adminToAssign && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {adminToAssign.companyId ? 'Unassign' : 'Assign'} Admin to Company
+              </h3>
+              <button
+                onClick={() => setShowAssignModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <FaTrash className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              {/* Admin Info */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white">
+                    <FaUser className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{adminToAssign.name}</p>
+                    <p className="text-sm text-gray-600">{adminToAssign.email}</p>
+                  </div>
+                </div>
+                {adminToAssign.companyId && (
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Currently assigned to:</span>
+                    <span className="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <FaBuilding className="w-3 h-3" />
+                      {adminToAssign.companyName}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {adminToAssign.companyId ? (
+                // Unassign confirmation
+                <div className="text-center py-8">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+                    <FaExclamationTriangle className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
+                    <h4 className="text-lg font-medium text-yellow-800 mb-2">Unassign Admin</h4>
+                    <p className="text-yellow-700">
+                      Are you sure you want to unassign <strong>{adminToAssign.name}</strong> from{' '}
+                      <strong>{adminToAssign.companyName}</strong>?
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                // Company selection
+                <div>
+                  {/* Search Bar */}
+                  <div className="mb-4">
+                    <div className="relative">
+                      <FaBuilding className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Search companies..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#90323d] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Companies List */}
+                  <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                    {searchTerm === '' ? (
+                      <div className="text-center py-12">
+                        <FaBuilding className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                        <h4 className="text-lg font-medium text-gray-600 mb-2">Search for Companies</h4>
+                        <p className="text-gray-500">
+                          Start typing above to find and assign a company to this admin
+                        </p>
+                      </div>
+                    ) : filteredCompanies.length === 0 ? (
+                      <div className="text-center py-8">
+                        <FaBuilding className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500">
+                          No companies found matching "{searchTerm}"
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-gray-200">
+                        {filteredCompanies.map((company) => (
+                          <div
+                            key={company.id}
+                            onClick={() => setSelectedCompany(company)}
+                            className={`p-4 cursor-pointer transition-colors hover:bg-gray-50 ${
+                              selectedCompany?.id === company.id ? 'bg-[#90323d] bg-opacity-10 border-l-4 border-[#90323d]' : ''
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-blue-100">
+                                  <FaBuilding className="w-4 h-4 text-blue-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-gray-900">{company.name}</h4>
+                                  <p className="text-sm text-gray-600">ID: {company.id}</p>
+                                </div>
+                              </div>
+                              {selectedCompany?.id === company.id && (
+                                <div className="text-[#90323d]">
+                                  <FaLink className="w-5 h-5" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Company Preview */}
+                  {selectedCompany && (
+                    <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-medium text-blue-900 mb-2">Company Preview</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-blue-700">
+                            <strong>Name:</strong> {selectedCompany.name}
+                          </p>
+                          <p className="text-sm text-blue-700">
+                            <strong>ID:</strong> {selectedCompany.id}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-blue-700">
+                            <strong>Created:</strong> {formatDate(selectedCompany.createdAt)}
+                          </p>
+                          <p className="text-sm text-blue-700">
+                            <strong>Status:</strong> Active
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setShowAssignModal(false)}
+                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              {adminToAssign.companyId ? (
+                <button
+                  onClick={() => handleAssignCompany(null)}
+                  disabled={assignLoading}
+                  className="px-6 py-2 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                >
+                  {assignLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Unassigning...
+                    </>
+                  ) : (
+                    <>
+                      <FaUnlink className="w-4 h-4" />
+                      Unassign Admin
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (selectedCompany) {
+                      handleAssignCompany(selectedCompany.id);
+                    }
+                  }}
+                  disabled={assignLoading || !selectedCompany}
+                  className="px-6 py-2 bg-[#90323d] text-white font-medium rounded-lg hover:bg-[#5e0b15] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                >
+                  {assignLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Assigning...
+                    </>
+                  ) : (
+                    <>
+                      <FaLink className="w-4 h-4" />
+                      Assign Admin
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>
