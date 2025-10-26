@@ -2,6 +2,7 @@ import express from "express";
 import {
   createAdmin,
   getAdmins,
+  getAdmin,
   updateAdmin,
   deleteAdmin,
   acceptInvite,
@@ -20,6 +21,9 @@ router.use(protect);
 
 // GET /api/users/admins - Get all admin users (super_admin only)
 router.get("/admins", getAdmins);
+
+// GET /api/users/admins/:id - Get single admin user (super_admin only)
+router.get("/admins/:id", getAdmin);
 
 // POST /api/users/admins - Create a new admin user (super_admin only)
 router.post("/admins", createAdmin);

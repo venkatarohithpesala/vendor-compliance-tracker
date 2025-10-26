@@ -179,6 +179,59 @@ export const getAdmins = async (req, res) => {
   }
 };
 
+// Get single admin user (only super_admin)
+export const getAdmin = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Authorization check: only super_admin can view admin users
+    if (req.user.role !== "super_admin") {
+      return res
+        .status(403)
+        .json({
+          message: "Access denied. Only super_admin can view admin users.",
+        });
+    }
+
+    // Find the admin user
+    const admin = await User.findByPk(id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin user not found." });
+    }
+
+    // Check if it's actually an admin
+    if (admin.role !== "admin") {
+      return res.status(400).json({ message: "User is not an admin." });
+    }
+
+    // Get admin with company info
+    const adminWithCompany = await User.findByPk(id, {
+      include: [{
+        model: Company,
+        as: 'company',
+        attributes: ['id', 'name'],
+        required: false
+      }]
+    });
+
+    res.json({
+      admin: {
+        id: adminWithCompany.id,
+        name: adminWithCompany.name,
+        email: adminWithCompany.email,
+        role: adminWithCompany.role,
+        companyId: adminWithCompany.companyId,
+        companyName: adminWithCompany.company ? adminWithCompany.company.name : null,
+        createdAt: adminWithCompany.createdAt,
+        updatedAt: adminWithCompany.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching admin user:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 // Update admin user (only super_admin)
 export const updateAdmin = async (req, res) => {
   const { id } = req.params;
