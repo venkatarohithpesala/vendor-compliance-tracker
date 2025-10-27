@@ -73,7 +73,9 @@ function AddVendor({ user }) {
       newErrors.name = "Vendor name is required";
     }
 
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required for vendor login";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
 
@@ -96,7 +98,7 @@ function AddVendor({ user }) {
     try {
       const submitData = {
         name: formData.name.trim(),
-        email: formData.email.trim() || null,
+        email: formData.email.trim(),
         phone: formData.phone.trim() || null,
         address: formData.address.trim() || null,
         category: formData.category.trim() || null,
@@ -105,7 +107,7 @@ function AddVendor({ user }) {
 
       await API.post("/vendors", submitData);
 
-      showToast.success("Vendor created successfully!");
+      showToast.success("Vendor created successfully! An invitation email has been sent to the vendor.");
       // Reset form
       setFormData({
         name: "",
@@ -178,7 +180,7 @@ function AddVendor({ user }) {
               htmlFor="email"
               className="block text-sm font-semibold text-gray-700 mb-2"
             >
-              Email <span className="text-gray-500">(optional)</span>
+              Email <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

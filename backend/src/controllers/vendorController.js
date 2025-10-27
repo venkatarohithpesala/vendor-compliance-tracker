@@ -1,4 +1,7 @@
-import { Vendor, Company, User } from "../models/index.js";
+import { Vendor, Company, User, Email } from "../models/index.js";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import emailQueue from "../config/emailQueue.js";
 
 // Create a new vendor
 export const createVendor = async (req, res) => {
@@ -12,6 +15,20 @@ export const createVendor = async (req, res) => {
         .json({
           message: "Vendor name is required and must be a non-empty string.",
         });
+    }
+
+    // Validation: email is required for vendor login
+    if (!email || typeof email !== "string" || email.trim().length === 0) {
+      return res
+        .status(400)
+        .json({
+          message: "Vendor email is required for account creation.",
+        });
+    }
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: "Email must be valid." });
     }
 
     // For admin users, use their assigned company
@@ -47,20 +64,79 @@ export const createVendor = async (req, res) => {
       return res.status(400).json({ message: "Cannot create vendor for inactive company." });
     }
 
-    // Optional: validate email if provided
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({ message: "Email must be valid." });
+    // Check for existing user with this email
+    const existingUser = await User.findOne({ where: { email: email.toLowerCase() } });
+    if (existingUser) {
+      return res
+        .status(409)
+        .json({ message: "A user with this email already exists." });
     }
 
-    // Create the vendor
+    // Generate secure temporary password
+    const tempPassword = crypto.randomBytes(12).toString('hex');
+    const salt = await bcrypt.genSalt(10);
+    const hashedTempPassword = await bcrypt.hash(tempPassword, salt);
+
+    // Generate secure invite token
+    const inviteToken = crypto.randomBytes(32).toString('hex');
+    const inviteExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Create vendor user account first
+    const vendorUser = await User.create({
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password: hashedTempPassword,
+      role: "vendor",
+      companyId: vendorCompanyId,
+      inviteToken,
+      inviteExpires,
+      inviteStatus: 'pending',
+      passwordResetRequired: true,
+      createdBy: req.user.id,
+    });
+
+    // Create the vendor record
     const vendor = await Vendor.create({
       name: name.trim(),
-      email: email ? email.trim() : null,
+      email: email.trim(),
       phone: phone ? phone.trim() : null,
       address: address ? address.trim() : null,
       category: category ? category.trim() : null,
       companyId: vendorCompanyId,
       createdBy: req.user.id,
+    });
+
+    // Create email record for invite
+    const emailRecord = await Email.create({
+      toAddress: vendorUser.email,
+      subject: 'Welcome to VenTrack - Vendor Invitation',
+      template: 'vendor-invite',
+      context: {
+        vendorName: vendorUser.name,
+        inviterName: req.user.name,
+        inviterEmail: req.user.email,
+        companyName: company.name,
+        tempPassword: tempPassword,
+        inviteUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/accept-invite/${inviteToken}`,
+        expiresAt: inviteExpires.toLocaleString(),
+      }
+    });
+
+    // Queue the email
+    await emailQueue.add({
+      emailId: emailRecord.id,
+      to: vendorUser.email,
+      subject: 'Welcome to VenTrack - Vendor Invitation',
+      template: 'vendor-invite',
+      context: {
+        vendorName: vendorUser.name,
+        inviterName: req.user.name,
+        inviterEmail: req.user.email,
+        companyName: company.name,
+        tempPassword: tempPassword,
+        inviteUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/accept-invite/${inviteToken}`,
+        expiresAt: inviteExpires.toLocaleString(),
+      }
     });
 
     // Fetch the created vendor with associations
@@ -81,7 +157,7 @@ export const createVendor = async (req, res) => {
 
     // Return success response
     res.status(201).json({
-      message: "Vendor created successfully.",
+      message: "Vendor created successfully. An invitation email has been sent to the vendor.",
       vendor: {
         id: vendorWithAssociations.id,
         name: vendorWithAssociations.name,
