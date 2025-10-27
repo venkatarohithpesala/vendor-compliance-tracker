@@ -23,24 +23,12 @@ const Company = sequelize.define("Company", {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    },
     updatedBy: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,  // Store email 
         allowNull: true,
-        references: {
-            model: 'Users',
-            key: 'id'
-        }
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
     }
+}, {
+    timestamps: true,  // Enable automatic createdAt and updatedAt
 });
 
 export default Company;

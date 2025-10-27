@@ -62,7 +62,7 @@ export const createAdmin = async (req, res) => {
       inviteExpires,
       inviteStatus: 'pending',
       passwordResetRequired: true,
-      createdBy: req.user.id,
+      createdBy: req.user.email,  // Store email instead of user ID
     });
 
     // Create email record for invite
@@ -131,15 +131,7 @@ export const getAdmins = async (req, res) => {
     // Fetch all admin users with company info
     const admins = await User.findAll({
       where: { role: "admin" },
-      attributes: ["id", "name", "email", "companyId", "createdAt", "updatedAt"],
-      include: [
-        {
-          model: User,
-          as: "creator",
-          attributes: ["name", "email"],
-          required: false,
-        },
-      ],
+      attributes: ["id", "name", "email", "companyId", "createdAt", "updatedAt", "createdBy", "updatedBy"],
       order: [["createdAt", "DESC"]],
     });
 
@@ -158,9 +150,10 @@ export const getAdmins = async (req, res) => {
           email: admin.email,
           companyId: admin.companyId,
           companyName,
-          createdBy: admin.creator ? admin.creator.name : null,
+          createdBy: admin.createdBy,
           createdAt: admin.createdAt,
           updatedAt: admin.updatedAt,
+          updatedBy: admin.updatedBy,
         };
       })
     );
@@ -290,6 +283,7 @@ export const updateAdmin = async (req, res) => {
     if (name) admin.name = name.trim();
     if (email) admin.email = email.toLowerCase().trim();
     if (companyId !== undefined) admin.companyId = companyId;
+    admin.updatedBy = req.user.email;
 
     await admin.save();
 

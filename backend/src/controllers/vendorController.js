@@ -103,7 +103,7 @@ export const createVendor = async (req, res) => {
       address: address ? address.trim() : null,
       category: category ? category.trim() : null,
       companyId: vendorCompanyId,
-      createdBy: req.user.id,
+      createdBy: req.user.email,
     });
 
     // Create email record for invite
@@ -146,11 +146,6 @@ export const createVendor = async (req, res) => {
           model: Company,
           as: 'company',
           attributes: ['id', 'name']
-        },
-        {
-          model: User,
-          as: 'creator',
-          attributes: ['id', 'name', 'email']
         }
       ]
     });
@@ -167,7 +162,7 @@ export const createVendor = async (req, res) => {
         category: vendorWithAssociations.category,
         status: vendorWithAssociations.status,
         company: vendorWithAssociations.company,
-        creator: vendorWithAssociations.creator,
+        createdBy: vendorWithAssociations.createdBy,
         createdAt: vendorWithAssociations.createdAt,
       },
     });
@@ -205,11 +200,6 @@ export const getVendors = async (req, res) => {
           model: Company,
           as: 'company',
           attributes: ['id', 'name']
-        },
-        {
-          model: User,
-          as: 'creator',
-          attributes: ['id', 'name', 'email']
         }
       ],
       order: [["createdAt", "DESC"]],
@@ -225,9 +215,10 @@ export const getVendors = async (req, res) => {
         category: vendor.category,
         status: vendor.status,
         company: vendor.company,
-        creator: vendor.creator,
+        createdBy: vendor.createdBy,
         createdAt: vendor.createdAt,
         updatedAt: vendor.updatedAt,
+        updatedBy: vendor.updatedBy,
       })),
       total: vendors.length,
     });
@@ -284,7 +275,7 @@ export const updateVendor = async (req, res) => {
     if (address !== undefined) updateData.address = address ? address.trim() : null;
     if (category !== undefined) updateData.category = category ? category.trim() : null;
 
-    updateData.updatedBy = req.user.id;
+    updateData.updatedBy = req.user.email;
 
     await vendor.update(updateData);
 
@@ -295,11 +286,6 @@ export const updateVendor = async (req, res) => {
           model: Company,
           as: 'company',
           attributes: ['id', 'name']
-        },
-        {
-          model: User,
-          as: 'creator',
-          attributes: ['id', 'name', 'email']
         }
       ]
     });
@@ -315,9 +301,10 @@ export const updateVendor = async (req, res) => {
         category: updatedVendor.category,
         status: updatedVendor.status,
         company: updatedVendor.company,
-        creator: updatedVendor.creator,
+        createdBy: updatedVendor.createdBy,
         createdAt: updatedVendor.createdAt,
         updatedAt: updatedVendor.updatedAt,
+        updatedBy: updatedVendor.updatedBy,
       },
     });
   } catch (error) {
@@ -367,7 +354,7 @@ export const updateVendorStatus = async (req, res) => {
 
     // Update the status
     vendor.status = status;
-    vendor.updatedBy = req.user.id;
+    vendor.updatedBy = req.user.email;
     await vendor.save();
 
     // Fetch updated vendor with associations
@@ -377,11 +364,6 @@ export const updateVendorStatus = async (req, res) => {
           model: Company,
           as: 'company',
           attributes: ['id', 'name']
-        },
-        {
-          model: User,
-          as: 'creator',
-          attributes: ['id', 'name', 'email']
         }
       ]
     });
@@ -397,9 +379,10 @@ export const updateVendorStatus = async (req, res) => {
         category: updatedVendor.category,
         status: updatedVendor.status,
         company: updatedVendor.company,
-        creator: updatedVendor.creator,
+        createdBy: updatedVendor.createdBy,
         createdAt: updatedVendor.createdAt,
         updatedAt: updatedVendor.updatedAt,
+        updatedBy: updatedVendor.updatedBy,
       },
     });
   } catch (error) {

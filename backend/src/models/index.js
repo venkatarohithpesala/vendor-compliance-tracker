@@ -1,4 +1,3 @@
-import sequelize from '../config/db.js';
 import User from './User.js';
 import Company from './Company.js';
 import Email from './Email.js';
@@ -6,16 +5,10 @@ import Vendor from './Vendor.js';
 
 // Define relationships
 const initializeModels = () => {
-    // Company has many Users
-    Company.hasMany(User, {
-        foreignKey: 'companyId'
-    });
-
-    // User belongs to Company
-    User.belongsTo(Company, {
-        foreignKey: 'companyId',
-        as: 'company'
-    });
+    // Company associations - updatedBy now stores emails directly
+    // Basic business relationships still needed
+    Company.hasMany(User, { foreignKey: 'companyId' });
+    User.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
 
     // Company has many Vendors
     Company.hasMany(Vendor, {
@@ -28,50 +21,33 @@ const initializeModels = () => {
         as: 'company'
     });
 
-    // Vendor belongs to User (createdBy)
-    Vendor.belongsTo(User, {
-        foreignKey: 'createdBy',
-        as: 'creator'
-    });
+    // Vendor associations - createdBy/updatedBy now store emails directly
+    // No foreign key relationships needed since we're storing emails
+    // User.hasMany(Vendor, { foreignKey: 'createdBy', as: 'createdVendors' });
+    // Vendor.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+    // User.hasMany(Vendor, { foreignKey: 'updatedBy', as: 'updatedVendors' });
+    // Vendor.belongsTo(User, { foreignKey: 'updatedBy', as: 'updater' });
 
-    // User has many Vendors (created)
-    User.hasMany(Vendor, {
-        foreignKey: 'createdBy',
-        as: 'createdVendors'
-    });
+    // User self-referencing relationships removed since createdBy/updatedBy now store emails instead of IDs
+    // User.belongsTo(User, {
+    //     foreignKey: 'createdBy',
+    //     as: 'creator'
+    // });
 
-    // Vendor belongs to User (updatedBy)
-    Vendor.belongsTo(User, {
-        foreignKey: 'updatedBy',
-        as: 'updater'
-    });
+    // User.hasMany(User, {
+    //     foreignKey: 'createdBy',
+    //     as: 'createdUsers'
+    // });
 
-    // User has many Vendors (updated)
-    User.hasMany(Vendor, {
-        foreignKey: 'updatedBy',
-        as: 'updatedVendors'
-    });
+    // User.belongsTo(User, {
+    //     foreignKey: 'updatedBy',
+    //     as: 'updater'
+    // });
 
-    // User self-referencing relationships
-    User.belongsTo(User, {
-        foreignKey: 'createdBy',
-        as: 'creator'
-    });
-
-    User.hasMany(User, {
-        foreignKey: 'createdBy',
-        as: 'createdUsers'
-    });
-
-    User.belongsTo(User, {
-        foreignKey: 'updatedBy',
-        as: 'updater'
-    });
-
-    User.hasMany(User, {
-        foreignKey: 'updatedBy',
-        as: 'updatedUsers'
-    });
+    // User.hasMany(User, {
+    //     foreignKey: 'updatedBy',
+    //     as: 'updatedUsers'
+    // });
 };
 
 export { User, Company, Email, Vendor, initializeModels };

@@ -47,20 +47,12 @@ const Vendor = sequelize.define('Vendor', {
     },
   },
   createdBy: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,  // Store email instead of user ID
     allowNull: false,
-    references: {
-      model: 'Users',
-      key: 'id',
-    },
   },
   updatedBy: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,  // Store email instead of user ID
     allowNull: true,
-    references: {
-      model: 'Users',
-      key: 'id',
-    },
   },
 }, {
   tableName: 'Vendors',

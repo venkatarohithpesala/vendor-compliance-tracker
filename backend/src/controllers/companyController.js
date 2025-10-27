@@ -102,7 +102,8 @@ export const getCompanies = async (req, res) => {
           name: company.name,
           website: company.website,
           status: company.status,
-          createdByEmail: company.createdBy || "Unknown",
+          createdByEmail: company.createdBy,
+          updatedByEmail: company.updatedBy,
           createdAt: company.createdAt,
           updatedAt: company.updatedAt,
         };
@@ -149,6 +150,7 @@ export const updateCompanyStatus = async (req, res) => {
 
     // Update the status
     company.status = status;
+    company.updatedBy = req.user.email;  // Track who updated the company
     await company.save();
 
     // Return success response
@@ -160,6 +162,7 @@ export const updateCompanyStatus = async (req, res) => {
         website: company.website,
         status: company.status,
         createdByEmail: company.createdBy,
+        updatedByEmail: company.updatedBy,
         createdAt: company.createdAt,
         updatedAt: company.updatedAt,
       },

@@ -14,7 +14,7 @@ const User = sequelize.define("User", {
     email : {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        // Removed unique: true to prevent duplicate index creation
     },
     password :{
         type: DataTypes.STRING,
@@ -28,17 +28,17 @@ const User = sequelize.define("User", {
         type: DataTypes.INTEGER,
         allowNull: true,  // super_admin won't have a company
         references: {
-            model: 'Companies',  // We'll create this table
+            model: 'Companies', 
             key: 'id'
         }
     },
     createdBy: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,  // Store email 
         allowNull: true,  // Will be null for first super_admin
-        references: {
-            model: 'Users',
-            key: 'id'
-        }
+    },
+    updatedBy: {
+        type: DataTypes.STRING,  // Store email
+        allowNull: true,
     },
     inviteToken: {
         type: DataTypes.STRING(255),
@@ -61,25 +61,16 @@ const User = sequelize.define("User", {
         defaultValue: false,
         allowNull: false,
         field: 'password_reset_required'
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    },
-    updatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'Users',
-            key: 'id'
-        }
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
     }
+}, {
+  tableName: 'Users',
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ['email']
+    }
+  ],
 });
 
 export default User;

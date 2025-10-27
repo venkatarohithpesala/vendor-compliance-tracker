@@ -7,17 +7,16 @@ export async function initializeDatabase() {
     try {
         // Test database connection
         await sequelize.authenticate();
+        console.log('Database connection established successfully');
 
-        // Initialize model relationships
+        // Initialize model relationships (needed for seeders)
         initializeModels();
 
-        // Sync all models with database
-        await sequelize.sync({ alter: true });
-        console.log('Database models synchronized');
+        // Note: Schema is now managed by migrations
+        // Run migrations manually with: npx sequelize-cli db:migrate
 
         // Run seeders in order
         await seedSuperAdmin();  // First create super admin
-        await seedAdminUser();   // Then create regular admin
         
     } catch (error) {
         console.error('Database initialization failed:', error);
