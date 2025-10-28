@@ -174,6 +174,58 @@ export const createVendor = async (req, res) => {
   }
 };
 
+// Get vendor by ID
+export const getVendor = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the vendor
+    const vendor = await Vendor.findByPk(id, {
+      include: [
+        {
+          model: Company,
+          as: 'company',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
+
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found." });
+    }
+
+    // Check permissions
+    if (req.user.role === "admin") {
+      if (!req.user.companyId || vendor.companyId !== req.user.companyId) {
+        return res
+          .status(403)
+          .json({ message: "Access denied. Can only view vendors from your company." });
+      }
+    }
+    // Super admin can view any vendor
+
+    res.json({
+      vendor: {
+        id: vendor.id,
+        name: vendor.name,
+        email: vendor.email,
+        phone: vendor.phone,
+        address: vendor.address,
+        category: vendor.category,
+        status: vendor.status,
+        company: vendor.company,
+        createdBy: vendor.createdBy,
+        createdAt: vendor.createdAt,
+        updatedAt: vendor.updatedAt,
+        updatedBy: vendor.updatedBy,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching vendor:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 // Get all vendors (filtered by company for admins)
 export const getVendors = async (req, res) => {
   try {
@@ -231,7 +283,7 @@ export const getVendors = async (req, res) => {
 // Update vendor
 export const updateVendor = async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone, address, category } = req.body;
+  const { name, email, phone, address, category, companyId } = req.body;
 
   try {
     // Find the vendor
@@ -258,6 +310,26 @@ export const updateVendor = async (req, res) => {
     }
     // Super admin can update any vendor
 
+    // Additional validation for companyId (only super_admin can change company)
+    if (companyId !== undefined && req.user.role !== "super_admin") {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Only super_admin can change vendor company assignment." });
+    }
+
+    // Validate companyId if provided
+    if (companyId !== undefined) {
+      if (companyId) {
+        const company = await Company.findByPk(companyId);
+        if (!company) {
+          return res.status(404).json({ message: "Company not found." });
+        }
+        if (company.status !== "active") {
+          return res.status(400).json({ message: "Cannot assign vendor to inactive company." });
+        }
+      }
+    }
+
     // Validation
     if (name && (typeof name !== "string" || name.trim().length === 0)) {
       return res.status(400).json({ message: "Vendor name must be a non-empty string." });
@@ -274,6 +346,7 @@ export const updateVendor = async (req, res) => {
     if (phone !== undefined) updateData.phone = phone ? phone.trim() : null;
     if (address !== undefined) updateData.address = address ? address.trim() : null;
     if (category !== undefined) updateData.category = category ? category.trim() : null;
+    if (companyId !== undefined) updateData.companyId = companyId;
 
     updateData.updatedBy = req.user.email;
 

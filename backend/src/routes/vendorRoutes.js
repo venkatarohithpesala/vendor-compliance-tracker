@@ -1,11 +1,14 @@
 import express from "express";
-import { createVendor, getVendors, updateVendor, updateVendorStatus, deleteVendor } from "../controllers/vendorController.js";
+import { createVendor, getVendors, getVendor, updateVendor, updateVendorStatus, deleteVendor } from "../controllers/vendorController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // GET /api/vendors - Get all vendors (filtered by company for admins)
 router.get("/", protect, getVendors);
+
+// GET /api/vendors/:id - Get a single vendor
+router.get("/:id", protect, getVendor);
 
 // POST /api/vendors - Create a new vendor
 router.post("/", protect, createVendor);
