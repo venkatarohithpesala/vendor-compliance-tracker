@@ -21,7 +21,7 @@ import {
   FaCheckSquare,
   FaSquare,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -46,6 +46,8 @@ function VendorsList() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -90,7 +92,12 @@ function VendorsList() {
             <FaStore className="w-4 h-4" />
           </div>
           <div>
-            <div className="font-medium text-gray-900">{row.original.name}</div>
+            <Link
+              to={`/vendors/${row.original.id}`}
+              className="font-medium text-gray-900 hover:text-[#90323d] transition-colors cursor-pointer"
+            >
+              {row.original.name}
+            </Link>
             <div className="text-sm text-gray-500">ID: {row.original.id}</div>
           </div>
         </div>
@@ -213,8 +220,9 @@ function VendorsList() {
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
           <button
+            onClick={() => navigate(`/vendors/${row.original.id}`)}
             className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
-            title="View Vendor"
+            title="View Vendor Profile"
           >
             <FaEye className="w-4 h-4" />
           </button>

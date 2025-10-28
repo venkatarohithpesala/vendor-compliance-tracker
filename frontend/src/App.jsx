@@ -12,6 +12,7 @@ import EditAdmin from "./pages/admins/EditAdmin";
 import AcceptInvite from "./pages/admins/AcceptInvite";
 import VendorsList from "./pages/vendors/VendorsList";
 import AddVendor from "./pages/vendors/AddVendor";
+import VendorProfile from "./pages/vendors/VendorProfile";
 import Layout from "./components/Layout";
 
 function App() {
@@ -167,6 +168,18 @@ function App() {
             isAuthenticated ? (
               <Layout title="Add Vendor" user={user} setIsAuthenticated={setIsAuthenticated}>
                 <AddVendor user={user} />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/vendors/:id"
+          element={
+            isAuthenticated ? (
+              <Layout title="Vendor Profile" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <VendorProfile user={user} />
               </Layout>
             ) : (
               <Navigate to="/login" replace />
