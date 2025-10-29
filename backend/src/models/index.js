@@ -2,6 +2,9 @@ import User from './User.js';
 import Company from './Company.js';
 import Email from './Email.js';
 import Vendor from './Vendor.js';
+import ComplianceCategory from './ComplianceCategory.js';
+import ComplianceRequirement from './ComplianceRequirement.js';
+import VendorCompliance from './VendorCompliance.js';
 
 // Define relationships
 const initializeModels = () => {
@@ -48,6 +51,40 @@ const initializeModels = () => {
     //     foreignKey: 'updatedBy',
     //     as: 'updatedUsers'
     // });
+
+    // Compliance Category associations
+    ComplianceCategory.hasMany(ComplianceRequirement, {
+        foreignKey: 'categoryId',
+        as: 'requirements'
+    });
+
+    // Compliance Requirement associations
+    ComplianceRequirement.belongsTo(ComplianceCategory, {
+        foreignKey: 'categoryId',
+        as: 'category'
+    });
+
+    ComplianceRequirement.hasMany(VendorCompliance, {
+        foreignKey: 'requirementId',
+        as: 'vendorCompliances'
+    });
+
+    // Vendor Compliance associations
+    VendorCompliance.belongsTo(Vendor, {
+        foreignKey: 'vendorId',
+        as: 'vendor'
+    });
+
+    VendorCompliance.belongsTo(ComplianceRequirement, {
+        foreignKey: 'requirementId',
+        as: 'requirement'
+    });
+
+    // Vendor has many compliance records
+    Vendor.hasMany(VendorCompliance, {
+        foreignKey: 'vendorId',
+        as: 'complianceRecords'
+    });
 };
 
-export { User, Company, Email, Vendor, initializeModels };
+export { User, Company, Email, Vendor, ComplianceCategory, ComplianceRequirement, VendorCompliance, initializeModels };
