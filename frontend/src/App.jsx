@@ -13,6 +13,12 @@ import AcceptInvite from "./pages/admins/AcceptInvite";
 import VendorsList from "./pages/vendors/VendorsList";
 import AddVendor from "./pages/vendors/AddVendor";
 import VendorProfile from "./pages/vendors/VendorProfile";
+import ComplianceRequirements from "./pages/compliance/ComplianceRequirements";
+import AddComplianceRequirement from "./pages/compliance/AddComplianceRequirement";
+import EditComplianceRequirement from "./pages/compliance/EditComplianceRequirement";
+import ComplianceCategories from "./pages/compliance/ComplianceCategories";
+import AddComplianceCategory from "./pages/compliance/AddComplianceCategory";
+import EditComplianceCategory from "./pages/compliance/EditComplianceCategory";
 import Layout from "./components/Layout";
 
 function App() {
@@ -180,6 +186,78 @@ function App() {
             isAuthenticated ? (
               <Layout title="Vendor Profile" user={user} setIsAuthenticated={setIsAuthenticated}>
                 <VendorProfile user={user} />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/compliance/categories"
+          element={
+            isAuthenticated ? (
+              <Layout title="Compliance Categories" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <ComplianceCategories />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/compliance/categories/add"
+          element={
+            isAuthenticated ? (
+              <Layout title="Add Compliance Category" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <AddComplianceCategory />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/compliance/categories/edit/:id"
+          element={
+            isAuthenticated ? (
+              <Layout title="Edit Compliance Category" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <EditComplianceCategory />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/compliance/requirements"
+          element={
+            isAuthenticated ? (
+              <Layout title="Compliance Requirements" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <ComplianceRequirements />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/compliance/requirements/add"
+          element={
+            isAuthenticated ? (
+              <Layout title="Add Compliance Requirement" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <AddComplianceRequirement />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/compliance/requirements/edit/:id"
+          element={
+            isAuthenticated ? (
+              <Layout title="Edit Compliance Requirement" user={user} setIsAuthenticated={setIsAuthenticated}>
+                <EditComplianceRequirement />
               </Layout>
             ) : (
               <Navigate to="/login" replace />

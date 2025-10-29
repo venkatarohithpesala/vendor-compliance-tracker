@@ -17,6 +17,7 @@ import {
   FaEnvelopeOpenText,
   FaTools,
   FaBuilding,
+  FaTag,
 } from "react-icons/fa";
 
 export const menuItems = {
@@ -92,6 +93,16 @@ export const menuItems = {
       children: [
         { title: "All Vendors", path: "/vendors", icon: FaListAlt },
         { title: "Add Vendor", path: "/vendors/add", icon: FaUserPlus },
+        {
+          title: "Compliance Categories",
+          path: "/compliance/categories",
+          icon: FaTag,
+        },
+        {
+          title: "Compliance Requirements",
+          path: "/compliance/requirements",
+          icon: FaClipboardCheck,
+        },
         {
           title: "Compliance Status",
           path: "/vendors/compliance",
