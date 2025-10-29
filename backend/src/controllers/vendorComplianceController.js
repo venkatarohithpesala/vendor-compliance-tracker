@@ -1,0 +1,384 @@
+import { VendorCompliance, Vendor, ComplianceRequirement, Company, ComplianceCategory } from "../models/index.js";
+
+// Assign a compliance requirement to a vendor
+export const assignComplianceRequirement = async (req, res) => {
+  const { vendorId, requirementId } = req.body;
+
+  try {
+    // Validation
+    if (!vendorId) {
+      return res.status(400).json({ message: "Vendor ID is required." });
+    }
+
+    if (!requirementId) {
+      return res.status(400).json({ message: "Requirement ID is required." });
+    }
+
+    // Verify vendor exists and user has access
+    const vendor = await Vendor.findByPk(vendorId, {
+      include: [{ model: Company, as: 'company' }]
+    });
+
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found." });
+    }
+
+    // Check permissions
+    if (req.user.role === "admin" && vendor.companyId !== req.user.companyId) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Can only assign requirements to vendors from your company." });
+    }
+
+    // Verify requirement exists and is active
+    const requirement = await ComplianceRequirement.findByPk(requirementId, {
+      include: [{ model: ComplianceCategory, as: 'category' }]
+    });
+
+    if (!requirement || !requirement.isActive) {
+      return res.status(404).json({ message: "Compliance requirement not found or inactive." });
+    }
+
+    // Check if this requirement is already assigned to this vendor
+    const existingAssignment = await VendorCompliance.findOne({
+      where: { vendorId, requirementId }
+    });
+
+    if (existingAssignment) {
+      return res.status(409).json({
+        message: "This requirement is already assigned to this vendor."
+      });
+    }
+
+    // Calculate next due date based on requirement frequency
+    let nextDueDate = null;
+    if (requirement.frequency !== 'one-time' && requirement.defaultDueDate) {
+      nextDueDate = new Date(requirement.defaultDueDate);
+    } else if (requirement.frequency !== 'one-time') {
+      // Default to end of current year if no specific date set
+      nextDueDate = new Date(new Date().getFullYear(), 11, 31);
+    }
+
+    // Create the assignment
+    const vendorCompliance = await VendorCompliance.create({
+      vendorId,
+      requirementId,
+      status: 'pending',
+      nextDueDate,
+      assignedBy: req.user.email,
+      createdBy: req.user.email,
+    });
+
+    // Fetch with associations
+    const assignmentWithDetails = await VendorCompliance.findByPk(vendorCompliance.id, {
+      include: [
+        {
+          model: Vendor,
+          as: 'vendor',
+          attributes: ['id', 'name', 'email']
+        },
+        {
+          model: ComplianceRequirement,
+          as: 'requirement',
+          include: [
+            {
+              model: ComplianceCategory,
+              as: 'category',
+              attributes: ['id', 'name']
+            }
+          ]
+        }
+      ]
+    });
+
+    res.status(201).json({
+      message: "Compliance requirement assigned to vendor successfully.",
+      assignment: {
+        id: assignmentWithDetails.id,
+        vendor: assignmentWithDetails.vendor,
+        requirement: assignmentWithDetails.requirement,
+        status: assignmentWithDetails.status,
+        nextDueDate: assignmentWithDetails.nextDueDate,
+        assignedBy: assignmentWithDetails.assignedBy,
+        createdAt: assignmentWithDetails.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error assigning compliance requirement:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error. Please try again." });
+  }
+};
+
+// Get compliance assignments for a vendor
+export const getVendorCompliance = async (req, res) => {
+  const { vendorId } = req.params;
+
+  try {
+    // Verify vendor exists and user has access
+    const vendor = await Vendor.findByPk(vendorId, {
+      include: [{ model: Company, as: 'company' }]
+    });
+
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found." });
+    }
+
+    // Check permissions
+    if (req.user.role === "admin" && vendor.companyId !== req.user.companyId) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Can only view compliance for vendors from your company." });
+    }
+
+    const complianceRecords = await VendorCompliance.findAll({
+      where: { vendorId },
+      include: [
+        {
+          model: ComplianceRequirement,
+          as: 'requirement',
+          where: { isActive: true },
+          include: [
+            {
+              model: ComplianceCategory,
+              as: 'category',
+              attributes: ['id', 'name']
+            }
+          ]
+        }
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json({
+      vendor: {
+        id: vendor.id,
+        name: vendor.name,
+        email: vendor.email,
+      },
+      complianceRecords: complianceRecords.map(record => ({
+        id: record.id,
+        requirement: record.requirement,
+        status: record.status,
+        complianceDate: record.complianceDate,
+        expiryDate: record.expiryDate,
+        nextDueDate: record.nextDueDate,
+        notes: record.notes,
+        documentUrls: record.documentUrls,
+        assignedBy: record.assignedBy,
+        reviewedBy: record.reviewedBy,
+        createdAt: record.createdAt,
+        updatedAt: record.updatedAt,
+      })),
+      total: complianceRecords.length,
+    });
+  } catch (error) {
+    console.error("Error fetching vendor compliance:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+// Update vendor compliance status
+export const updateVendorCompliance = async (req, res) => {
+  const { id } = req.params;
+  const { status, complianceDate, expiryDate, nextDueDate, notes, documentUrls } = req.body;
+
+  try {
+    const complianceRecord = await VendorCompliance.findByPk(id, {
+      include: [
+        { model: Vendor, as: 'vendor', include: [{ model: Company, as: 'company' }] },
+        { model: ComplianceRequirement, as: 'requirement' }
+      ]
+    });
+
+    if (!complianceRecord) {
+      return res.status(404).json({ message: "Compliance record not found." });
+    }
+
+    // Check permissions
+    if (req.user.role === "admin" && complianceRecord.vendor.companyId !== req.user.companyId) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Can only update compliance for vendors from your company." });
+    }
+
+    // Validate status
+    const validStatuses = ['compliant', 'non-compliant', 'pending', 'expired', 'not-applicable'];
+    if (status && !validStatuses.includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid status. Must be one of: " + validStatuses.join(', ') });
+    }
+
+    // Update the record
+    const updateData = {};
+    if (status !== undefined) updateData.status = status;
+    if (complianceDate !== undefined) updateData.complianceDate = complianceDate;
+    if (expiryDate !== undefined) updateData.expiryDate = expiryDate;
+    if (nextDueDate !== undefined) updateData.nextDueDate = nextDueDate;
+    if (notes !== undefined) updateData.notes = notes;
+    if (documentUrls !== undefined) updateData.documentUrls = documentUrls;
+    if (status === 'compliant' || status === 'non-compliant') {
+      updateData.reviewedBy = req.user.email;
+    }
+    updateData.updatedBy = req.user.email;
+
+    await complianceRecord.update(updateData);
+
+    // Fetch updated record with associations
+    const updatedRecord = await VendorCompliance.findByPk(id, {
+      include: [
+        {
+          model: Vendor,
+          as: 'vendor',
+          attributes: ['id', 'name', 'email']
+        },
+        {
+          model: ComplianceRequirement,
+          as: 'requirement',
+          include: [
+            {
+              model: ComplianceCategory,
+              as: 'category',
+              attributes: ['id', 'name']
+            }
+          ]
+        }
+      ]
+    });
+
+    res.json({
+      message: "Compliance record updated successfully.",
+      complianceRecord: {
+        id: updatedRecord.id,
+        vendor: updatedRecord.vendor,
+        requirement: updatedRecord.requirement,
+        status: updatedRecord.status,
+        complianceDate: updatedRecord.complianceDate,
+        expiryDate: updatedRecord.expiryDate,
+        nextDueDate: updatedRecord.nextDueDate,
+        notes: updatedRecord.notes,
+        documentUrls: updatedRecord.documentUrls,
+        assignedBy: updatedRecord.assignedBy,
+        reviewedBy: updatedRecord.reviewedBy,
+        createdAt: updatedRecord.createdAt,
+        updatedAt: updatedRecord.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating vendor compliance:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error. Please try again." });
+  }
+};
+
+// Remove a compliance requirement from a vendor
+export const removeVendorCompliance = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const complianceRecord = await VendorCompliance.findByPk(id, {
+      include: [
+        { model: Vendor, as: 'vendor', include: [{ model: Company, as: 'company' }] }
+      ]
+    });
+
+    if (!complianceRecord) {
+      return res.status(404).json({ message: "Compliance record not found." });
+    }
+
+    // Check permissions
+    if (req.user.role === "admin" && complianceRecord.vendor.companyId !== req.user.companyId) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Can only remove compliance assignments for vendors from your company." });
+    }
+
+    // Delete the record
+    await complianceRecord.destroy();
+
+    res.json({
+      message: "Compliance requirement removed from vendor successfully.",
+    });
+  } catch (error) {
+    console.error("Error removing vendor compliance:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error. Please try again." });
+  }
+};
+
+// Get all compliance assignments (for dashboard/overview)
+export const getAllComplianceAssignments = async (req, res) => {
+  try {
+    let whereClause = {};
+
+    // Filter by company for admin users
+    if (req.user.role === "admin") {
+      if (!req.user.companyId) {
+        return res
+          .status(403)
+          .json({
+            message: "Access denied. Admin must be assigned to a company.",
+          });
+      }
+      // Join with vendors to filter by company
+      whereClause = {
+        '$vendor.companyId$': req.user.companyId
+      };
+    }
+
+    const assignments = await VendorCompliance.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: Vendor,
+          as: 'vendor',
+          attributes: ['id', 'name', 'email', 'companyId'],
+          include: [
+            {
+              model: Company,
+              as: 'company',
+              attributes: ['id', 'name']
+            }
+          ]
+        },
+        {
+          model: ComplianceRequirement,
+          as: 'requirement',
+          where: { isActive: true },
+          include: [
+            {
+              model: ComplianceCategory,
+              as: 'category',
+              attributes: ['id', 'name']
+            }
+          ]
+        }
+      ],
+      order: [["nextDueDate", "ASC"], ["createdAt", "DESC"]],
+    });
+
+    res.json({
+      assignments: assignments.map(assignment => ({
+        id: assignment.id,
+        vendor: assignment.vendor,
+        requirement: assignment.requirement,
+        status: assignment.status,
+        complianceDate: assignment.complianceDate,
+        expiryDate: assignment.expiryDate,
+        nextDueDate: assignment.nextDueDate,
+        notes: assignment.notes,
+        assignedBy: assignment.assignedBy,
+        reviewedBy: assignment.reviewedBy,
+        createdAt: assignment.createdAt,
+      })),
+      total: assignments.length,
+    });
+  } catch (error) {
+    console.error("Error fetching compliance assignments:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
