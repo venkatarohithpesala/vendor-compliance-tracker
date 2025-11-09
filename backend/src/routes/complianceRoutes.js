@@ -5,7 +5,7 @@ import {
   getComplianceCategories,
   getComplianceCategory,
   updateComplianceCategory,
-  deleteComplianceCategory
+  deleteComplianceCategory,
 } from "../controllers/complianceCategoryController.js";
 
 import {
@@ -13,7 +13,7 @@ import {
   getComplianceRequirements,
   getComplianceRequirement,
   updateComplianceRequirement,
-  deleteComplianceRequirement
+  deleteComplianceRequirement,
 } from "../controllers/complianceRequirementController.js";
 
 import {
@@ -21,7 +21,11 @@ import {
   getVendorCompliance,
   updateVendorCompliance,
   removeVendorCompliance,
-  getAllComplianceAssignments
+  getAllComplianceAssignments,
+  bulkUpdateComplianceStatus,
+  getComplianceStatistics,
+  getOverdueAssignments,
+  getAssignmentsByStatus,
 } from "../controllers/vendorComplianceController.js";
 
 const router = express.Router();
@@ -73,5 +77,17 @@ router.put("/assignments/:id", protect, updateVendorCompliance);
 
 // DELETE /api/compliance/assignments/:id - Remove a compliance assignment
 router.delete("/assignments/:id", protect, removeVendorCompliance);
+
+// PUT /api/compliance/assignments/bulk - Bulk update compliance status
+router.put("/assignments/bulk", protect, bulkUpdateComplianceStatus);
+
+// GET /api/compliance/statistics - Get compliance statistics and summary
+router.get("/statistics", protect, getComplianceStatistics);
+
+// GET /api/compliance/overdue - Get overdue compliance assignments
+router.get("/overdue", protect, getOverdueAssignments);
+
+// GET /api/compliance/status/:status - Get assignments by status
+router.get("/status/:status", protect, getAssignmentsByStatus);
 
 export default router;
