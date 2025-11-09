@@ -31,12 +31,10 @@ export const assignComplianceRequirement = async (req, res) => {
 
     // Check permissions
     if (req.user.role === "admin" && vendor.companyId !== req.user.companyId) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "Access denied. Can only assign requirements to vendors from your company.",
-        });
+      return res.status(403).json({
+        message:
+          "Access denied. Can only assign requirements to vendors from your company.",
+      });
     }
 
     // Verify requirement exists and is active
@@ -141,12 +139,10 @@ export const getVendorCompliance = async (req, res) => {
 
     // Check permissions
     if (req.user.role === "admin" && vendor.companyId !== req.user.companyId) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "Access denied. Can only view compliance for vendors from your company.",
-        });
+      return res.status(403).json({
+        message:
+          "Access denied. Can only view compliance for vendors from your company.",
+      });
     }
 
     const complianceRecords = await VendorCompliance.findAll({
@@ -229,12 +225,10 @@ export const updateVendorCompliance = async (req, res) => {
       req.user.role === "admin" &&
       complianceRecord.vendor.companyId !== req.user.companyId
     ) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "Access denied. Can only update compliance for vendors from your company.",
-        });
+      return res.status(403).json({
+        message:
+          "Access denied. Can only update compliance for vendors from your company.",
+      });
     }
 
     // Validate status
@@ -246,12 +240,9 @@ export const updateVendorCompliance = async (req, res) => {
       "not-applicable",
     ];
     if (status && !validStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Invalid status. Must be one of: " + validStatuses.join(", "),
-        });
+      return res.status(400).json({
+        message: "Invalid status. Must be one of: " + validStatuses.join(", "),
+      });
     }
 
     // Update the record
@@ -342,12 +333,10 @@ export const removeVendorCompliance = async (req, res) => {
       req.user.role === "admin" &&
       complianceRecord.vendor.companyId !== req.user.companyId
     ) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "Access denied. Can only remove compliance assignments for vendors from your company.",
-        });
+      return res.status(403).json({
+        message:
+          "Access denied. Can only remove compliance assignments for vendors from your company.",
+      });
     }
 
     // Delete the record
@@ -464,12 +453,9 @@ export const bulkUpdateComplianceStatus = async (req, res) => {
       "not-applicable",
     ];
     if (!validStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Invalid status. Must be one of: " + validStatuses.join(", "),
-        });
+      return res.status(400).json({
+        message: "Invalid status. Must be one of: " + validStatuses.join(", "),
+      });
     }
 
     // Verify all assignments exist and user has access
@@ -494,12 +480,10 @@ export const bulkUpdateComplianceStatus = async (req, res) => {
         req.user.role === "admin" &&
         assignment.vendor.companyId !== req.user.companyId
       ) {
-        return res
-          .status(403)
-          .json({
-            message:
-              "Access denied. Can only update assignments for vendors from your company.",
-          });
+        return res.status(403).json({
+          message:
+            "Access denied. Can only update assignments for vendors from your company.",
+        });
       }
     }
 
@@ -759,7 +743,7 @@ export const getOverdueAssignments = async (req, res) => {
         {
           model: Vendor,
           as: "vendor",
-          attributes: ["id", "name", "email"],
+          attributes: ["id", "name", "email", "companyId"],
           include: [
             {
               model: Company,
@@ -820,12 +804,9 @@ export const getAssignmentsByStatus = async (req, res) => {
       "not-applicable",
     ];
     if (!validStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Invalid status. Must be one of: " + validStatuses.join(", "),
-        });
+      return res.status(400).json({
+        message: "Invalid status. Must be one of: " + validStatuses.join(", "),
+      });
     }
 
     let whereClause = { status };
@@ -846,7 +827,7 @@ export const getAssignmentsByStatus = async (req, res) => {
         {
           model: Vendor,
           as: "vendor",
-          attributes: ["id", "name", "email"],
+          attributes: ["id", "name", "email", "companyId"],
           include: [
             {
               model: Company,
@@ -893,6 +874,95 @@ export const getAssignmentsByStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching assignments by status:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+// Get a single compliance record by ID
+export const getComplianceRecord = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const complianceRecord = await VendorCompliance.findByPk(id, {
+      include: [
+        {
+          model: Vendor,
+          as: "vendor",
+          attributes: ["id", "name", "email", "companyId"],
+          include: [
+            {
+              model: Company,
+              as: "company",
+              attributes: ["id", "name"],
+            },
+          ],
+        },
+        {
+          model: ComplianceRequirement,
+          as: "requirement",
+          include: [
+            {
+              model: ComplianceCategory,
+              as: "category",
+              attributes: ["id", "name"],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!complianceRecord) {
+      return res.status(404).json({ message: "Compliance record not found." });
+    }
+
+    // Check permissions
+    if (req.user.role === "admin") {
+      if (!req.user.companyId) {
+        return res.status(403).json({
+          message: "Access denied. Admin must be assigned to a company.",
+        });
+      }
+
+      if (complianceRecord.vendor.companyId !== req.user.companyId) {
+        return res.status(403).json({
+          message:
+            "Access denied. Can only view compliance records for vendors from your company.",
+        });
+      }
+    }
+
+    // If user is vendor, they can only view their own compliance records
+    if (
+      req.user.role === "vendor" &&
+      complianceRecord.vendorId !== req.user.vendorId
+    ) {
+      return res.status(403).json({
+        message: "Access denied. Can only view your own compliance records.",
+      });
+    }
+
+    res.json({
+      compliance: {
+        id: complianceRecord.id,
+        vendorId: complianceRecord.vendorId,
+        vendorName: complianceRecord.vendor.name,
+        requirementId: complianceRecord.requirementId,
+        requirementName: complianceRecord.requirement.name,
+        categoryName: complianceRecord.requirement.category.name,
+        status: complianceRecord.status,
+        complianceDate: complianceRecord.complianceDate,
+        expiryDate: complianceRecord.expiryDate,
+        nextDueDate: complianceRecord.nextDueDate,
+        notes: complianceRecord.notes,
+        documentUrls: complianceRecord.documentUrls,
+        assignedBy: complianceRecord.assignedBy,
+        reviewedBy: complianceRecord.reviewedBy,
+        createdAt: complianceRecord.createdAt,
+        updatedAt: complianceRecord.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching compliance record:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };

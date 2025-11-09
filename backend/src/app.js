@@ -6,6 +6,7 @@ import companyRoutes from "./routes/companyRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
 import complianceRoutes from "./routes/complianceRoutes.js";
+import documentRoutes from "./routes/documentRoutes.js";
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.use("/api/companies", companyRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/compliance", complianceRoutes);
+app.use("/api/documents", documentRoutes);
 
 export default app;

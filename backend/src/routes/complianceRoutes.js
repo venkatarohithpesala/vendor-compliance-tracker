@@ -26,6 +26,7 @@ import {
   getComplianceStatistics,
   getOverdueAssignments,
   getAssignmentsByStatus,
+  getComplianceRecord,
 } from "../controllers/vendorComplianceController.js";
 
 const router = express.Router();
@@ -89,5 +90,8 @@ router.get("/overdue", protect, getOverdueAssignments);
 
 // GET /api/compliance/status/:status - Get assignments by status
 router.get("/status/:status", protect, getAssignmentsByStatus);
+
+// GET /api/compliance/:id - Get a single compliance record
+router.get("/:id", protect, getComplianceRecord);
 
 export default router;
