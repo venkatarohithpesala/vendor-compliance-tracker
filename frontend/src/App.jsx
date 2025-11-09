@@ -18,6 +18,7 @@ import AcceptInvite from "./pages/admins/AcceptInvite";
 import VendorsList from "./pages/vendors/VendorsList";
 import AddVendor from "./pages/vendors/AddVendor";
 import VendorProfile from "./pages/vendors/VendorProfile";
+import VendorDocuments from "./pages/vendors/VendorDocuments";
 import ComplianceRequirements from "./pages/compliance/ComplianceRequirements";
 import AddComplianceRequirement from "./pages/compliance/AddComplianceRequirement";
 import EditComplianceRequirement from "./pages/compliance/EditComplianceRequirement";
@@ -339,7 +340,7 @@ function App() {
                 user={user}
                 setIsAuthenticated={setIsAuthenticated}
               >
-                <VendorComplianceAssignment />
+                <VendorComplianceAssignment user={user} />
               </Layout>
             ) : (
               <Navigate to="/login" replace />
@@ -356,6 +357,54 @@ function App() {
                 setIsAuthenticated={setIsAuthenticated}
               >
                 <ComplianceStatusDashboard />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/documents/upload"
+          element={
+            isAuthenticated ? (
+              <Layout
+                title="Upload Documents"
+                user={user}
+                setIsAuthenticated={setIsAuthenticated}
+              >
+                <VendorDocuments user={user} />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/documents"
+          element={
+            isAuthenticated ? (
+              <Layout
+                title="My Documents"
+                user={user}
+                setIsAuthenticated={setIsAuthenticated}
+              >
+                <VendorDocuments user={user} />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/documents/expiry"
+          element={
+            isAuthenticated ? (
+              <Layout
+                title="Document Expiry Status"
+                user={user}
+                setIsAuthenticated={setIsAuthenticated}
+              >
+                <VendorDocuments user={user} />
               </Layout>
             ) : (
               <Navigate to="/login" replace />

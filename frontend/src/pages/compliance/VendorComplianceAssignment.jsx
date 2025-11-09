@@ -14,6 +14,8 @@ import {
   FaClock,
   FaExclamationTriangle,
   FaMinusCircle,
+  FaFileAlt,
+  FaEye,
 } from "react-icons/fa";
 import {
   useReactTable,
@@ -25,14 +27,17 @@ import {
 } from "@tanstack/react-table";
 import API from "../../api/api";
 import { showToast } from "../../utils/toast";
+import ComplianceDocuments from "../../components/ComplianceDocuments";
 
-function VendorComplianceAssignment() {
+function VendorComplianceAssignment({ user }) {
   const [assignments, setAssignments] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [requirements, setRequirements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
 
   // Filters and search
   const [globalFilter, setGlobalFilter] = useState("");
@@ -194,6 +199,23 @@ function VendorComplianceAssignment() {
       header: "Assigned By",
       cell: ({ row }) => (
         <span className="text-sm text-gray-600">{row.original.assignedBy}</span>
+      ),
+    },
+    {
+      id: "documents",
+      header: "Documents",
+      cell: ({ row }) => (
+        <button
+          onClick={() => {
+            setSelectedAssignment(row.original);
+            setShowDocumentModal(true);
+          }}
+          className="inline-flex items-center gap-2 px-3 py-1 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+          title="View/Manage Documents"
+        >
+          <FaFileAlt className="w-3 h-3" />
+          <FaEye className="w-3 h-3" />
+        </button>
       ),
     },
   ];
@@ -753,6 +775,42 @@ function VendorComplianceAssignment() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Document Management Modal */}
+      {showDocumentModal && selectedAssignment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Document Management
+                </h3>
+                <p className="text-gray-600 text-sm mt-1">
+                  {selectedAssignment.requirement?.name} -{" "}
+                  {selectedAssignment.vendor?.name}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowDocumentModal(false);
+                  setSelectedAssignment(null);
+                }}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <FaTimesCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <ComplianceDocuments
+                complianceId={selectedAssignment.id}
+                userRole={user?.role || "vendor"}
+                refreshTrigger={() => fetchAssignments()}
+              />
+            </div>
           </div>
         </div>
       )}
