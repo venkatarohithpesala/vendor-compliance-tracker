@@ -1,4 +1,4 @@
-import { User } from "../models/index.js";
+import { User, Vendor } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -33,7 +33,7 @@ export const login = async(req, res) => {
             process.env.JWT_SECRET,
             {expiresIn: "1d"}
         );
-        
+
         // Set JWT as HTTP-only cookie
         res.cookie("token", token, {
           httpOnly: true,
@@ -41,8 +41,28 @@ export const login = async(req, res) => {
           sameSite: "strict",
           maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
+
+        let userData = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            companyId: user.companyId
+        };
+
+        // If user is a vendor, include vendorId
+        if (user.role === 'vendor') {
+            const vendor = await Vendor.findOne({
+                where: { email: user.email },
+                attributes: ['id']
+            });
+            if (vendor) {
+                userData.vendorId = vendor.id;
+            }
+        }
+
         // Send user info only
-        res.status(200).json({user: {id: user.id, name: user.name, email: user.email, role: user.role, companyId: user.companyId}});
+        res.status(200).json({user: userData});
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({error: error.message});
@@ -54,15 +74,34 @@ export const checkAuth = async (req, res) => {
     try {
         // If we get here, it means the auth middleware validated the token
         const user = await User.findByPk(req.user.id, {
-            attributes: ['id', 'name', 'email', 'role', 'companyId'] 
+            attributes: ['id', 'name', 'email', 'role', 'companyId']
         });
-        
+
         if (!user) {
             return res.status(401).json({ message: "User not found" });
         }
 
+        let userData = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            companyId: user.companyId
+        };
+
+        // If user is a vendor, include vendorId
+        if (user.role === 'vendor') {
+            const vendor = await Vendor.findOne({
+                where: { email: user.email },
+                attributes: ['id']
+            });
+            if (vendor) {
+                userData.vendorId = vendor.id;
+            }
+        }
+
         return res.json({
-            user,
+            user: userData,
             authenticated: true
         });
     } catch (error) {
