@@ -140,3 +140,7 @@ vite.config.ts.timestamp-*
 
 # Ignoring the localstack folder
 .localstack
+# Vite cache and build
+.vite/
+frontend/dist/
+frontend/.vite/
