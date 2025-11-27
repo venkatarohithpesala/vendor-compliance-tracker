@@ -142,3 +142,5 @@ vite.config.ts.timestamp-*
 .vite/
 frontend/dist/
 frontend/.vite/
+
+.localstack
