@@ -26,6 +26,14 @@ const ComplianceRequirement = sequelize.define('ComplianceRequirement', {
       key: 'id',
     },
   },
+  companyId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Companies',
+      key: 'id',
+    },
+  },
   frequency: {
     type: DataTypes.ENUM('one-time', 'annual', 'semi-annual', 'quarterly', 'monthly'),
     allowNull: false,

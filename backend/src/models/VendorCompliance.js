@@ -23,6 +23,14 @@ const VendorCompliance = sequelize.define('VendorCompliance', {
       key: 'id',
     },
   },
+  companyId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Companies',
+      key: 'id',
+    },
+  },
   status: {
     type: DataTypes.ENUM('compliant', 'non-compliant', 'pending', 'expired', 'not-applicable'),
     defaultValue: 'pending',

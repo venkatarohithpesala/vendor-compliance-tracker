@@ -10,7 +10,6 @@ const ComplianceCategory = sequelize.define('ComplianceCategory', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     validate: {
       notEmpty: true,
     },
@@ -23,6 +22,14 @@ const ComplianceCategory = sequelize.define('ComplianceCategory', {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
     allowNull: false,
+  },
+  companyId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Companies',
+      key: 'id',
+    },
   },
   createdBy: {
     type: DataTypes.STRING,
