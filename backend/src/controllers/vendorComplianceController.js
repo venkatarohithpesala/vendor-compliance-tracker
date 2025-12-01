@@ -72,6 +72,7 @@ export const assignComplianceRequirement = async (req, res) => {
     const vendorCompliance = await VendorCompliance.create({
       vendorId,
       requirementId,
+      companyId: vendor.companyId, // Use vendor's company
       status: "pending",
       nextDueDate,
       assignedBy: req.user.email,
@@ -142,6 +143,13 @@ export const getVendorCompliance = async (req, res) => {
       return res.status(403).json({
         message:
           "Access denied. Can only view compliance for vendors from your company.",
+      });
+    }
+
+    // Allow vendors to access their own records
+    if (req.user.role === "vendor" && req.user.vendorId !== parseInt(vendorId)) {
+      return res.status(403).json({
+        message: "Access denied. Can only view your own compliance records.",
       });
     }
 
@@ -365,10 +373,7 @@ export const getAllComplianceAssignments = async (req, res) => {
           message: "Access denied. Admin must be assigned to a company.",
         });
       }
-      // Join with vendors to filter by company
-      whereClause = {
-        "$vendor.companyId$": req.user.companyId,
-      };
+      whereClause.companyId = req.user.companyId;
     }
 
     const assignments = await VendorCompliance.findAll({
