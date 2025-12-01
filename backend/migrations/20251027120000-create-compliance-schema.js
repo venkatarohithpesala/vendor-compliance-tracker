@@ -13,12 +13,21 @@ export default {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
       },
       description: {
         type: Sequelize.TEXT,
         allowNull: true
+      },
+      companyId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Companies',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       isActive: {
         type: Sequelize.BOOLEAN,
@@ -68,6 +77,16 @@ export default {
         },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT'
+      },
+      companyId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Companies',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       frequency: {
         type: Sequelize.ENUM('one-time', 'annual', 'semi-annual', 'quarterly', 'monthly'),
@@ -129,6 +148,16 @@ export default {
         allowNull: false,
         references: {
           model: 'ComplianceRequirements',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      companyId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Companies',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -196,8 +225,21 @@ export default {
       name: 'compliance_categories_is_active_index'
     });
 
+    await queryInterface.addIndex('ComplianceCategories', ['companyId'], {
+      name: 'compliance_categories_company_id_index'
+    });
+
+    await queryInterface.addIndex('ComplianceCategories', ['name', 'companyId'], {
+      name: 'compliance_categories_name_company_unique',
+      unique: true
+    });
+
     await queryInterface.addIndex('ComplianceRequirements', ['categoryId'], {
       name: 'compliance_requirements_category_id_index'
+    });
+
+    await queryInterface.addIndex('ComplianceRequirements', ['companyId'], {
+      name: 'compliance_requirements_company_id_index'
     });
 
     await queryInterface.addIndex('ComplianceRequirements', ['isActive'], {
@@ -214,6 +256,10 @@ export default {
 
     await queryInterface.addIndex('VendorCompliance', ['requirementId'], {
       name: 'vendor_compliance_requirement_id_index'
+    });
+
+    await queryInterface.addIndex('VendorCompliance', ['companyId'], {
+      name: 'vendor_compliance_company_id_index'
     });
 
     await queryInterface.addIndex('VendorCompliance', ['status'], {
