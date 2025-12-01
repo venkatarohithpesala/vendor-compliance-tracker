@@ -8,7 +8,7 @@ import {
   acceptInvite,
   validateInviteToken,
 } from "../controllers/userController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, requireSuperAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -18,6 +18,7 @@ router.post("/invite/:token/accept", acceptInvite);
 
 // All other routes require authentication and super_admin role
 router.use(protect);
+router.use(requireSuperAdmin);
 
 // GET /api/users/admins - Get all admin users (super_admin only)
 router.get("/admins", getAdmins);

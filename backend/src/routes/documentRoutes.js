@@ -1,5 +1,5 @@
 import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, requireAdmin } from "../middleware/authMiddleware.js";
 import multer from "multer";
 import {
   uploadDocument,
@@ -60,15 +60,15 @@ router.post(
 router.get("/compliance/:complianceId", protect, getComplianceDocuments);
 
 // GET /api/documents - Get all documents (admin view)
-router.get("/", protect, getAllDocuments);
+router.get("/", protect, requireAdmin, getAllDocuments);
 
 // PUT /api/documents/review/:id - Review document (approve/reject)
-router.put("/review/:id", protect, reviewDocument);
+router.put("/review/:id", protect, requireAdmin, reviewDocument);
 
 // GET /api/documents/download/:id - Download document
 router.get("/download/:id", protect, downloadDocument);
 
 // DELETE /api/documents/:id - Delete document
-router.delete("/:id", protect, deleteDocument);
+router.delete("/:id", protect, requireAdmin, deleteDocument);
 
 export default router;

@@ -44,3 +44,19 @@ export const protect = async (req, res, next) => {
     res.status(401).json({ message: "Token is not valid" });
   }
 };
+
+// Middleware to check if user is admin or super_admin
+export const requireAdmin = (req, res, next) => {
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+    return res.status(403).json({ message: "Access denied. Admin privileges required." });
+  }
+  next();
+};
+
+// Middleware to check if user is super_admin
+export const requireSuperAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'super_admin') {
+    return res.status(403).json({ message: "Access denied. Super admin privileges required." });
+  }
+  next();
+};
