@@ -28,10 +28,15 @@ export const createComplianceRequirement = async (req, res) => {
         .json({ message: "Invalid frequency. Must be one of: " + validFrequencies.join(', ') });
     }
 
-    // Verify category exists and is active
+    // Verify category exists, is active, and belongs to user's company
     const category = await ComplianceCategory.findByPk(categoryId);
     if (!category || !category.isActive) {
       return res.status(404).json({ message: "Compliance category not found or inactive." });
+    }
+
+    // Check if category belongs to user's company (unless super_admin)
+    if (req.user.role !== 'super_admin' && category.companyId !== req.user.companyId) {
+      return res.status(403).json({ message: "Access denied. You can only create requirements for categories in your company." });
     }
 
     // Create the requirement
@@ -39,6 +44,7 @@ export const createComplianceRequirement = async (req, res) => {
       name: name.trim(),
       description: description ? description.trim() : null,
       categoryId: categoryId,
+      companyId: category.companyId, // Use category's company
       frequency: frequency || 'annual',
       defaultDueDate: defaultDueDate || null,
       renewalPeriodMonths: renewalPeriodMonths || null,
@@ -85,6 +91,12 @@ export const getComplianceRequirements = async (req, res) => {
     const { categoryId } = req.query;
 
     const whereClause = { isActive: true };
+
+    // Filter by user's company unless super_admin
+    if (req.user.role !== 'super_admin') {
+      whereClause.companyId = req.user.companyId;
+    }
+
     if (categoryId) {
       whereClause.categoryId = categoryId;
     }
@@ -95,7 +107,9 @@ export const getComplianceRequirements = async (req, res) => {
         {
           model: ComplianceCategory,
           as: 'category',
-          attributes: ['id', 'name']
+          attributes: ['id', 'name'],
+          where: req.user.role !== 'super_admin' ? { companyId: req.user.companyId } : {},
+          required: true
         }
       ],
       order: [["name", "ASC"]],
@@ -142,6 +156,11 @@ export const getComplianceRequirement = async (req, res) => {
       return res.status(404).json({ message: "Compliance requirement not found." });
     }
 
+    // Check if requirement belongs to user's company (unless super_admin)
+    if (req.user.role !== 'super_admin' && requirement.companyId !== req.user.companyId) {
+      return res.status(403).json({ message: "Access denied. You can only view requirements from your company." });
+    }
+
     res.json({
       requirement: {
         id: requirement.id,
@@ -173,6 +192,11 @@ export const updateComplianceRequirement = async (req, res) => {
 
     if (!requirement) {
       return res.status(404).json({ message: "Compliance requirement not found." });
+    }
+
+    // Check if requirement belongs to user's company (unless super_admin)
+    if (req.user.role !== 'super_admin' && requirement.companyId !== req.user.companyId) {
+      return res.status(403).json({ message: "Access denied. You can only update requirements from your company." });
     }
 
     // Validation
@@ -252,6 +276,11 @@ export const deleteComplianceRequirement = async (req, res) => {
 
     if (!requirement) {
       return res.status(404).json({ message: "Compliance requirement not found." });
+    }
+
+    // Check if requirement belongs to user's company (unless super_admin)
+    if (req.user.role !== 'super_admin' && requirement.companyId !== req.user.companyId) {
+      return res.status(403).json({ message: "Access denied. You can only delete requirements from your company." });
     }
 
     // Soft delete by deactivating

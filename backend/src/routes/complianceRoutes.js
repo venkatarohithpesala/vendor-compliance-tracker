@@ -1,5 +1,5 @@
 import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, requireAdmin, requireSuperAdmin } from "../middleware/authMiddleware.js";
 import {
   createComplianceCategory,
   getComplianceCategories,
@@ -32,55 +32,55 @@ import {
 const router = express.Router();
 
 // Compliance Categories Routes
-// GET /api/compliance/categories - Get all active compliance categories
-router.get("/categories", protect, getComplianceCategories);
+// GET /api/compliance/categories - Get all active compliance categories (for user's company)
+router.get("/categories", protect, requireAdmin, getComplianceCategories);
 
-// POST /api/compliance/categories - Create a new compliance category
-router.post("/categories", protect, createComplianceCategory);
+// POST /api/compliance/categories - Create a new compliance category (for user's company)
+router.post("/categories", protect, requireAdmin, createComplianceCategory);
 
 // GET /api/compliance/categories/:id - Get a specific compliance category
-router.get("/categories/:id", protect, getComplianceCategory);
+router.get("/categories/:id", protect, requireAdmin, getComplianceCategory);
 
 // PUT /api/compliance/categories/:id - Update a compliance category
-router.put("/categories/:id", protect, updateComplianceCategory);
+router.put("/categories/:id", protect, requireAdmin, updateComplianceCategory);
 
 // DELETE /api/compliance/categories/:id - Deactivate a compliance category
-router.delete("/categories/:id", protect, deleteComplianceCategory);
+router.delete("/categories/:id", protect, requireAdmin, deleteComplianceCategory);
 
 // Compliance Requirements Routes
 // GET /api/compliance/requirements - Get all active compliance requirements (optional category filter)
-router.get("/requirements", protect, getComplianceRequirements);
+router.get("/requirements", protect, requireAdmin, getComplianceRequirements);
 
 // POST /api/compliance/requirements - Create a new compliance requirement
-router.post("/requirements", protect, createComplianceRequirement);
+router.post("/requirements", protect, requireAdmin, createComplianceRequirement);
 
 // GET /api/compliance/requirements/:id - Get a specific compliance requirement
-router.get("/requirements/:id", protect, getComplianceRequirement);
+router.get("/requirements/:id", protect, requireAdmin, getComplianceRequirement);
 
 // PUT /api/compliance/requirements/:id - Update a compliance requirement
-router.put("/requirements/:id", protect, updateComplianceRequirement);
+router.put("/requirements/:id", protect, requireAdmin, updateComplianceRequirement);
 
 // DELETE /api/compliance/requirements/:id - Deactivate a compliance requirement
-router.delete("/requirements/:id", protect, deleteComplianceRequirement);
+router.delete("/requirements/:id", protect, requireAdmin, deleteComplianceRequirement);
 
 // Vendor Compliance Routes
 // GET /api/compliance/assignments - Get all compliance assignments (for dashboard)
-router.get("/assignments", protect, getAllComplianceAssignments);
+router.get("/assignments", protect, requireAdmin, getAllComplianceAssignments);
 
 // POST /api/compliance/assignments - Assign a requirement to a vendor
-router.post("/assignments", protect, assignComplianceRequirement);
+router.post("/assignments", protect, requireAdmin, assignComplianceRequirement);
 
 // GET /api/compliance/vendors/:vendorId - Get compliance records for a specific vendor
 router.get("/vendors/:vendorId", protect, getVendorCompliance);
 
 // PUT /api/compliance/assignments/:id - Update a compliance assignment status
-router.put("/assignments/:id", protect, updateVendorCompliance);
+router.put("/assignments/:id", protect, requireAdmin, updateVendorCompliance);
 
 // DELETE /api/compliance/assignments/:id - Remove a compliance assignment
-router.delete("/assignments/:id", protect, removeVendorCompliance);
+router.delete("/assignments/:id", protect, requireAdmin, removeVendorCompliance);
 
 // PUT /api/compliance/assignments/bulk - Bulk update compliance status
-router.put("/assignments/bulk", protect, bulkUpdateComplianceStatus);
+router.put("/assignments/bulk", protect, requireAdmin, bulkUpdateComplianceStatus);
 
 // GET /api/compliance/statistics - Get compliance statistics and summary
 router.get("/statistics", protect, getComplianceStatistics);
