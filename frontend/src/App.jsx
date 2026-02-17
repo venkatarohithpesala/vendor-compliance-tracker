@@ -19,6 +19,7 @@ import VendorsList from "./pages/vendors/VendorsList";
 import AddVendor from "./pages/vendors/AddVendor";
 import VendorProfile from "./pages/vendors/VendorProfile";
 import VendorDocuments from "./pages/vendors/VendorDocuments";
+import DocumentManagement from "./pages/documents/DocumentManagement";
 import ComplianceRequirements from "./pages/compliance/ComplianceRequirements";
 import AddComplianceRequirement from "./pages/compliance/AddComplianceRequirement";
 import EditComplianceRequirement from "./pages/compliance/EditComplianceRequirement";
@@ -384,11 +385,15 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout
-                title="My Documents"
+                title={user?.role === "admin" || user?.role === "super_admin" ? "Document Management" : "My Documents"}
                 user={user}
                 setIsAuthenticated={setIsAuthenticated}
               >
-                <VendorDocuments user={user} />
+                {user?.role === "admin" || user?.role === "super_admin" ? (
+                  <DocumentManagement />
+                ) : (
+                  <VendorDocuments user={user} />
+                )}
               </Layout>
             ) : (
               <Navigate to="/login" replace />
@@ -404,7 +409,11 @@ function App() {
                 user={user}
                 setIsAuthenticated={setIsAuthenticated}
               >
-                <VendorDocuments user={user} />
+                {user?.role === "admin" || user?.role === "super_admin" ? (
+                  <DocumentManagement />
+                ) : (
+                  <VendorDocuments user={user} />
+                )}
               </Layout>
             ) : (
               <Navigate to="/login" replace />

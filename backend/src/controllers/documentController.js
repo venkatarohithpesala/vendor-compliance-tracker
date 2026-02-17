@@ -226,7 +226,18 @@ export const getComplianceDocuments = async (req, res) => {
 // Get all documents (admin view)
 export const getAllDocuments = async (req, res) => {
   try {
+    const { status, vendorId, documentType } = req.query;
     let whereClause = {};
+
+    // Filter by status if provided
+    if (status) {
+      whereClause.status = status;
+    }
+
+    // Filter by document type if provided
+    if (documentType) {
+      whereClause.documentType = documentType;
+    }
 
     // Filter by company for admin users
     if (req.user.role === "admin") {
@@ -235,9 +246,12 @@ export const getAllDocuments = async (req, res) => {
           message: "Access denied. Admin must be assigned to a company.",
         });
       }
-      whereClause = {
-        "$compliance.vendor.companyId$": req.user.companyId,
-      };
+      whereClause["$compliance.vendor.companyId$"] = req.user.companyId;
+
+      // Further filter by specific vendor if requested
+      if (vendorId) {
+        whereClause["$compliance.vendorId$"] = vendorId;
+      }
     }
 
     const documents = await Document.findAll({
@@ -262,7 +276,7 @@ export const getAllDocuments = async (req, res) => {
             {
               model: ComplianceRequirement,
               as: "requirement",
-              attributes: ["id", "name"],
+              attributes: ["id", "name", "description"],
             },
           ],
         },
@@ -357,12 +371,21 @@ export const reviewDocument = async (req, res) => {
 
     await document.save();
 
-    // If approved, update compliance status to compliant
+    // Update compliance status based on review
     if (status === "approved") {
       await VendorCompliance.update(
         {
           status: "compliant",
           complianceDate: new Date(),
+          reviewedBy: req.user.email,
+          updatedBy: req.user.email,
+        },
+        { where: { id: document.complianceId } }
+      );
+    } else if (status === "rejected") {
+      await VendorCompliance.update(
+        {
+          status: "non-compliant",
           reviewedBy: req.user.email,
           updatedBy: req.user.email,
         },
