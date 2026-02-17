@@ -1,9 +1,13 @@
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import Queue from 'bull';
 import { createModuleLogger } from '../utils/loggerFactory.js';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables - search in parent directories for .env
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const logger = createModuleLogger(import.meta.url);
 

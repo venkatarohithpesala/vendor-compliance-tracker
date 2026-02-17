@@ -1,15 +1,18 @@
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createModuleLogger } from '../utils/loggerFactory.js';
 import emailQueue from '../config/emailQueue.js';
 import { Email } from '../models/index.js';
 import nodemailer from 'nodemailer';
 import sgMail from '@sendgrid/mail';
 import { promises as fs } from 'fs';
-import path from 'path';
 import Handlebars from 'handlebars';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables - search in parent directories for .env
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const logger = createModuleLogger(import.meta.url);
 
