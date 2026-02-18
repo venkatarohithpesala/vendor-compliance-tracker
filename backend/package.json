@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "worker": "nodemon src/workers/emailWorker.js",
+    "expiry-worker": "nodemon src/workers/expiryWorker.js",
     "start": "node server.js"
   },
   "keywords": [],
