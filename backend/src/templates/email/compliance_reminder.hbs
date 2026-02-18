@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Reminder - VenTrack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #f4f7f9;
+            padding: 20px;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid #e1e8ed;
+        }
+
+        .header {
+            background: #5e0b15;
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 24px;
+        }
+
+        .details-box {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #5e0b15;
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: #2d3748;
+            width: 120px;
+            display: inline-block;
+        }
+
+        .detail-value {
+            color: #4a5568;
+        }
+
+        .cta-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #5e0b15;
+            color: #ffffff !important;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            border-top: 1px solid #e1e8ed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>VenTrack</h1>
+        </div>
+        <div class="content">
+            <p class="greeting">Hello {{vendorName}},</p>
+            <p class="message">{{customMessage}}</p>
+
+            <div class="details-box">
+                <div class="detail-item">
+                    <span class="detail-label">Requirement:</span>
+                    <span class="detail-value">{{requirementName}}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Expiry Date:</span>
+                    <span class="detail-value" style="color: #e53e3e; font-weight: 600;">{{expiryDate}}</span>
+                </div>
+            </div>
+
+            <p class="message">To maintain your compliance status, please upload the updated documents through your
+                portal.</p>
+
+            <div class="cta-container">
+                <a href="{{actionUrl}}" class="cta-button">Upload Documents</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 VenTrack Vendor Compliance System. All rights reserved.</p>
+            <p>This is an automated reminder. Please do not reply directly to this email.</p>
+        </div>
+    </div>
+</body>
+
+</html>
