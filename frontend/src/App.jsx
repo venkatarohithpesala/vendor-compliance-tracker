@@ -20,6 +20,7 @@ import AddVendor from "./pages/vendors/AddVendor";
 import VendorProfile from "./pages/vendors/VendorProfile";
 import VendorDocuments from "./pages/vendors/VendorDocuments";
 import DocumentManagement from "./pages/documents/DocumentManagement";
+import ExpiryTracking from "./pages/documents/ExpiryTracking";
 import ComplianceRequirements from "./pages/compliance/ComplianceRequirements";
 import AddComplianceRequirement from "./pages/compliance/AddComplianceRequirement";
 import EditComplianceRequirement from "./pages/compliance/EditComplianceRequirement";
@@ -410,7 +411,7 @@ function App() {
                 setIsAuthenticated={setIsAuthenticated}
               >
                 {user?.role === "admin" || user?.role === "super_admin" ? (
-                  <DocumentManagement />
+                  <ExpiryTracking />
                 ) : (
                   <VendorDocuments user={user} />
                 )}
