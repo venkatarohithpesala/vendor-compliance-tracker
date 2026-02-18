@@ -1,32 +1,34 @@
 import express from "express";
 import { protect, requireAdmin, requireSuperAdmin } from "../middleware/authMiddleware.js";
 import {
-  createComplianceCategory,
-  getComplianceCategories,
-  getComplianceCategory,
-  updateComplianceCategory,
-  deleteComplianceCategory,
+    createComplianceCategory,
+    getComplianceCategories,
+    getComplianceCategory,
+    updateComplianceCategory,
+    deleteComplianceCategory,
 } from "../controllers/complianceCategoryController.js";
 
 import {
-  createComplianceRequirement,
-  getComplianceRequirements,
-  getComplianceRequirement,
-  updateComplianceRequirement,
-  deleteComplianceRequirement,
+    createComplianceRequirement,
+    getComplianceRequirements,
+    getComplianceRequirement,
+    updateComplianceRequirement,
+    deleteComplianceRequirement,
 } from "../controllers/complianceRequirementController.js";
 
 import {
-  assignComplianceRequirement,
-  getVendorCompliance,
-  updateVendorCompliance,
-  removeVendorCompliance,
-  getAllComplianceAssignments,
-  bulkUpdateComplianceStatus,
-  getComplianceStatistics,
-  getOverdueAssignments,
-  getAssignmentsByStatus,
-  getComplianceRecord,
+    assignComplianceRequirement,
+    getVendorCompliance,
+    updateVendorCompliance,
+    removeVendorCompliance,
+    getAllComplianceAssignments,
+    bulkUpdateComplianceStatus,
+    getComplianceStatistics,
+    getOverdueAssignments,
+    getExpiringCompliance, // Added
+    sendComplianceReminder, // Added
+    getAssignmentsByStatus,
+    getComplianceRecord,
 } from "../controllers/vendorComplianceController.js";
 
 const router = express.Router();
@@ -87,6 +89,12 @@ router.get("/statistics", protect, getComplianceStatistics);
 
 // GET /api/compliance/overdue - Get overdue compliance assignments
 router.get("/overdue", protect, getOverdueAssignments);
+
+// GET /api/compliance/expiring - Get expiring compliance assignments
+router.get("/expiring", protect, getExpiringCompliance);
+
+// POST /api/compliance/remind/:id - Send a manual reminder
+router.post("/remind/:id", protect, requireAdmin, sendComplianceReminder);
 
 // GET /api/compliance/status/:status - Get assignments by status
 router.get("/status/:status", protect, getAssignmentsByStatus);
