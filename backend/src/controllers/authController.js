@@ -17,7 +17,7 @@ export const register = async(req, res) => {
 
 // Login User
 export const login = async(req, res) => {
-    const {email, password} = req.body;
+    const {email, password, rememberMe} = req.body;
     try {
         const user = await User.findOne({where: {email}});
 
@@ -31,15 +31,19 @@ export const login = async(req, res) => {
         const token = jwt.sign(
             {id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
-            {expiresIn: "1d"}
+            {expiresIn: rememberMe ? "7d" : "1d"}
         );
+
+        const cookieMaxAge = rememberMe
+          ? 7 * 24 * 60 * 60 * 1000
+          : 24 * 60 * 60 * 1000;
 
         // Set JWT as HTTP-only cookie
         res.cookie("token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production", // use true in production
           sameSite: "strict",
-          maxAge: 24 * 60 * 60 * 1000 // 1 day
+          maxAge: cookieMaxAge
         });
 
         let userData = {
