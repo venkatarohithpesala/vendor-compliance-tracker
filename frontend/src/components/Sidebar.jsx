@@ -61,8 +61,9 @@ function Sidebar({ role }) {
             <button
               onClick={() => toggleMenu(item.title)}
               className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl
-                text-[#faedcd] group hover:bg-white/10 transition-all duration-200
+                group hover:bg-white/10 transition-all duration-200
                 ${openMenus[item.title] ? "bg-white/10" : ""}`}
+              style={{ color: "var(--color-sidebar-text)" }}
             >
               <div className="flex items-center gap-3">
                 {Icon && <Icon className="w-5 h-5" />}
@@ -84,10 +85,11 @@ function Sidebar({ role }) {
                 <Link
                   key={child.path}
                   to={child.path}
-                  className={`flex items-center gap-3 px-4 py-2 rounded-xl text-[#faedcd]/90 
-                    hover:bg-white/10 hover:text-[#faedcd] transition-all duration-200 text-sm
-                    ${isActive(child.path) ? "bg-white/20 text-[#faedcd]" : ""}
+                  className={`flex items-center gap-3 px-4 py-2 rounded-xl
+                    hover:bg-white/10 transition-all duration-200 text-sm
+                    ${isActive(child.path) ? "bg-white/20" : ""}
                     whitespace-nowrap overflow-hidden text-ellipsis`}
+                  style={{ color: "var(--color-sidebar-text)" }}
                 >
                   {child.icon && <child.icon className="w-4 h-4" />}
                   {child.title}
@@ -103,11 +105,10 @@ function Sidebar({ role }) {
                 <Link
                   key={child.path}
                   to={child.path}
-                  className={`flex items-center justify-center h-8 rounded-lg text-[#faedcd]/90 
-                    hover:bg-white/10 hover:text-[#faedcd] transition-all duration-200
-                    ${
-                      isActive(child.path) ? "bg-white/20 text-[#faedcd]" : ""
-                    }`}
+                  className={`flex items-center justify-center h-8 rounded-lg
+                    hover:bg-white/10 transition-all duration-200
+                    ${isActive(child.path) ? "bg-white/20" : ""}`}
+                  style={{ color: "var(--color-sidebar-text)" }}
                   title={child.title}
                 >
                   {child.icon && <child.icon className="w-[18px] h-[18px]" />}
@@ -126,8 +127,9 @@ function Sidebar({ role }) {
         className={`flex items-center ${
           isCollapsed ? "justify-center h-8" : "gap-3"
         } px-4 py-2.5 rounded-lg 
-          text-[#faedcd] hover:bg-white/10 transition-all duration-200
+          hover:bg-white/10 transition-all duration-200
           ${isActive(item.path) ? "bg-white/20" : ""}`}
+        style={{ color: "var(--color-sidebar-text)" }}
         title={isCollapsed ? item.title : undefined}
       >
         {Icon && (
@@ -146,24 +148,29 @@ function Sidebar({ role }) {
         isCollapsed ? "w-16" : "w-64"
       } sticky top-0 h-screen flex flex-col transition-all duration-300`}
       style={{
-        background: "#5e0b15",
+        background: "var(--color-sidebar-bg)",
+        fontFamily: "var(--font-sidebar)",
       }}
     >
       {/* Header */}
       <div className="px-4 py-6 flex items-center justify-between">
         {!isCollapsed && (
           <div>
-            <h1 className="text-[#faedcd] text-2xl font-bold tracking-tight">
+            <h1
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: "var(--color-sidebar-text)" }}
+            >
               VenTrack
             </h1>
-            <p className="text-[#faedcd]/70 text-sm mt-1">
+            <p className="text-sm mt-1" style={{ color: "var(--color-sidebar-text-muted)" }}>
               Secure. Compliant. Simple.
             </p>
           </div>
         )}
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-lg hover:bg-white/10 transition-colors text-[#faedcd]"
+          className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+          style={{ color: "var(--color-sidebar-text)" }}
         >
           <FaBars className="w-5 h-5" />
         </button>

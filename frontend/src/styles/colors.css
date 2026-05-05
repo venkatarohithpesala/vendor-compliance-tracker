@@ -8,4 +8,12 @@
   --color-text: #1f2937;
   --color-muted: #6b7280;
   --color-border: #d8dfd2;
+  --color-sidebar-bg: #4f5c48;
+  --color-sidebar-text: #f6f7f4;
+  --color-sidebar-text-muted: rgba(246, 247, 244, 0.72);
+  --font-sidebar: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --color-topbar-bg: #ffffff;
+  --color-topbar-border: #e6ece1;
+  --color-topbar-title: #2f3b2a;
+  --font-app: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
