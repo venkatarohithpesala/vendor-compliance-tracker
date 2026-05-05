@@ -1,7 +1,7 @@
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
-export default {
+module.exports = {
   async up (queryInterface, Sequelize) {
     // Create Companies table
     await queryInterface.createTable('Companies', {
@@ -294,3 +294,4 @@ export default {
     await queryInterface.dropTable('Companies');
   }
 };
+
