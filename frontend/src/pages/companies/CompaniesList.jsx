@@ -30,12 +30,12 @@ function CompaniesList() {
       header: "Company",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white">
+          <div className="p-2 rounded-lg text-white" style={{ backgroundColor: "var(--color-primary)" }}>
             <FaBuilding className="w-4 h-4" />
           </div>
           <div>
-            <div className="font-medium text-gray-900">{row.original.name}</div>
-            <div className="text-sm text-gray-500">ID: {row.original.id}</div>
+            <div className="font-medium" style={{ color: "var(--color-text)" }}>{row.original.name}</div>
+            <div className="text-sm" style={{ color: "var(--color-muted)" }}>ID: {row.original.id}</div>
           </div>
         </div>
       ),
@@ -49,7 +49,8 @@ function CompaniesList() {
             href={row.original.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+            className="hover:underline flex items-center gap-1 transition-colors"
+            style={{ color: "var(--color-primary)" }}
           >
             <FaGlobe className="w-4 h-4" />
             {row.original.website.replace(/^https?:\/\//, "")}
@@ -108,7 +109,12 @@ function CompaniesList() {
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 hover:bg-[#90323d]/5 text-[#90323d] hover:text-[#5e0b15] font-medium rounded-lg transition-all duration-200 border border-gray-200 hover:border-[#90323d]/20">
+          <button
+            className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 font-medium rounded-lg transition-all duration-200 border"
+            style={{ color: "var(--color-primary)", borderColor: "var(--color-border)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-primary-hover)"; e.currentTarget.style.borderColor = "var(--color-primary)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-primary)"; e.currentTarget.style.borderColor = "var(--color-border)"; }}
+          >
             <FaEye className="w-4 h-4" />
             View
           </button>
@@ -170,8 +176,8 @@ function CompaniesList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#90323d]"></div>
-        <span className="ml-2 text-gray-600">Loading companies...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: "var(--color-primary)" }}></div>
+        <span className="ml-2" style={{ color: "var(--color-muted)" }}>Loading companies...</span>
       </div>
     );
   }
@@ -186,7 +192,10 @@ function CompaniesList() {
         </div>
         <button
           onClick={fetchCompanies}
-          className="px-4 py-2 bg-[#90323d] text-white rounded-lg hover:bg-[#5e0b15] transition-colors"
+          className="px-4 py-2 text-white rounded-lg transition-colors"
+          style={{ backgroundColor: "var(--color-primary)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary-hover)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary)"; }}
         >
           Try Again
         </button>
@@ -199,12 +208,12 @@ function CompaniesList() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white">
+          <div className="p-3 rounded-xl text-white" style={{ backgroundColor: "var(--color-primary)" }}>
             <FaBuilding className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-[#5e0b15]">Companies</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>Companies</h1>
+            <p className="mt-1" style={{ color: "var(--color-muted)" }}>
               Manage all companies in the system
             </p>
           </div>
@@ -212,7 +221,10 @@ function CompaniesList() {
 
         <Link
           to="/companies/add"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+          className="inline-flex items-center gap-2 px-4 py-2 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+          style={{ backgroundColor: "var(--color-primary)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary-hover)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary)"; }}
         >
           <FaPlus className="w-4 h-4" />
           Add Company
@@ -221,48 +233,48 @@ function CompaniesList() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div className="rounded-xl shadow-sm p-6 border" style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-100">
-              <FaBuilding className="w-5 h-5 text-blue-600" />
+            <div className="p-2 rounded-lg" style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.15)" }}>
+              <FaBuilding className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium" style={{ color: "var(--color-muted)" }}>
                 Total Companies
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
                 {companies.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div className="rounded-xl shadow-sm p-6 border" style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-green-100">
               <FaCheckCircle className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium" style={{ color: "var(--color-muted)" }}>
                 Active Companies
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
                 {companies.filter((c) => c.status === "active").length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div className="rounded-xl shadow-sm p-6 border" style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-red-100">
               <FaTimesCircle className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium" style={{ color: "var(--color-muted)" }}>
                 Inactive Companies
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
                 {companies.filter((c) => c.status === "inactive").length}
               </p>
             </div>
@@ -271,22 +283,25 @@ function CompaniesList() {
       </div>
 
       {/* Companies Grid */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="rounded-xl shadow-sm border overflow-hidden" style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}>
         {companies.length === 0 ? (
           <div className="text-center py-16">
             <div className="p-4 rounded-full bg-gray-100 w-20 h-20 mx-auto mb-6 flex items-center justify-center">
               <FaBuilding className="w-10 h-10 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold mb-2" style={{ color: "var(--color-text)" }}>
               No companies yet
             </h3>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            <p className="mb-8 max-w-md mx-auto" style={{ color: "var(--color-muted)" }}>
               Get started by creating your first company to begin managing
               vendor compliance
             </p>
             <Link
               to="/companies/add"
-              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#90323d] to-[#5e0b15] text-white font-semibold rounded-xl hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="inline-flex items-center gap-3 px-6 py-3 text-white font-semibold rounded-xl hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              style={{ backgroundColor: "var(--color-primary)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary-hover)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary)"; }}
             >
               <FaPlus className="w-5 h-5" />
               Create First Company
@@ -294,14 +309,15 @@ function CompaniesList() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y" style={{ "--tw-divide-opacity": "1", borderColor: "var(--color-border)" }}>
+              <thead style={{ backgroundColor: "var(--color-page-bg)" }}>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        style={{ color: "var(--color-muted)" }}
                       >
                         {header.isPlaceholder
                           ? null
@@ -314,9 +330,9 @@ function CompaniesList() {
                   </tr>
                 ))}
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y" style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}>
                 {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50">
+                  <tr key={row.id} className="transition-colors" onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--color-page-bg)"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
                         {flexRender(
