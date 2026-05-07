@@ -1,15 +1,95 @@
+/* ── Override toastify CSS variables ── */
+:root {
+  --toastify-color-success: #8c9b82;
+  --toastify-color-error: #c45c5c;
+  --toastify-color-warning: #c49820;
+  --toastify-color-info: #4a7cb5;
+  --toastify-icon-color-success: #8c9b82;
+  --toastify-icon-color-error: #c45c5c;
+  --toastify-icon-color-warning: #c49820;
+  --toastify-icon-color-info: #4a7cb5;
+  --toastify-color-progress-success: #8c9b82;
+  --toastify-color-progress-error: #c45c5c;
+  --toastify-color-progress-warning: #c49820;
+  --toastify-color-progress-info: #4a7cb5;
+}
+
+/* ── Base container ── */
+.Toastify__toast-container {
+  width: 360px !important;
+  padding: 0 !important;
+}
+
+/* ── Toast card ── */
 .Toastify__toast {
-    border: none !important;
-    background: white !important;
-    padding: 16px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 14px !important;
+  padding: 14px 16px !important;
+  margin-bottom: 10px !important;
+  min-height: unset !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px rgba(31, 41, 55, 0.10) !important;
+  border: 1px solid transparent !important;
+  font-family: "Anisette Std", "Inter", "Segoe UI", sans-serif !important;
 }
 
+/* ── Per-type backgrounds + borders ── */
+.Toastify__toast--success {
+  background: #f4f8f1 !important;
+  border-color: #c4d4bb !important;
+  color: #2e4a27 !important;
+}
+
+.Toastify__toast--error {
+  background: #fdf3f3 !important;
+  border-color: #f0c4c4 !important;
+  color: #6b2020 !important;
+}
+
+.Toastify__toast--warning {
+  background: #fdf8ee !important;
+  border-color: #e8d498 !important;
+  color: #6b4a10 !important;
+}
+
+.Toastify__toast--info {
+  background: #f1f5f9 !important;
+  border-color: #c4d4e8 !important;
+  color: #1e3a5f !important;
+}
+
+/* ── Icon ── */
+.Toastify__toast-icon {
+  margin-top: 1px !important;
+  flex-shrink: 0 !important;
+  width: 18px !important;
+}
+
+/* ── Body text ── */
 .Toastify__toast-body {
-    font-size: 14px !important;
-    font-weight: 500 !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: inherit !important;
 }
 
-.Toastify__progress-bar {
-    height: 3px !important;
+/* ── Close button ── */
+.Toastify__close-button {
+  color: inherit !important;
+  opacity: 0.4 !important;
+  background: transparent !important;
+}
+.Toastify__close-button:hover {
+  opacity: 0.8 !important;
+}
+
+/* ── Progress bar wrapper — hidden via hideProgressBar prop (data-hidden=true sets opacity:0) ── */
+.Toastify__progress-bar--wrp {
+  height: 3px !important;
+}
+
+.Toastify__progress-bar--wrp[data-hidden='true'] {
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
