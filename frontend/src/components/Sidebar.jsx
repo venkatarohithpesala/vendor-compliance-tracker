@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FaAngleDown, FaBars } from "react-icons/fa";
 import { menuItems } from "../config/menuItems";
 import "../styles/scrollbar.css";
+import logo from "../assets/logo1.png";
 
 function Sidebar({ role }) {
   if (!role || !menuItems[role]) {
@@ -153,31 +154,28 @@ function Sidebar({ role }) {
       }}
     >
       {/* Header */}
-      <div className="px-4 py-6 flex items-center justify-between">
-        {!isCollapsed && (
-          <div>
-            <h1
-              className="text-2xl font-bold tracking-tight"
-              style={{ color: "var(--color-sidebar-text)" }}
-            >
-              VenTrack
-            </h1>
-            <p className="text-sm mt-1" style={{ color: "var(--color-sidebar-text-muted)" }}>
-              Secure. Compliant. Simple.
-            </p>
-          </div>
+      <div className="px-4 pt-3 pb-3 flex items-center justify-between">
+        {!isCollapsed ? (
+          <img
+            src={logo}
+            alt="VenTrack"
+            className="w-32 object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
+        ) : (
+          <span />
         )}
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className="p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
           style={{ color: "var(--color-sidebar-text)" }}
         >
-          <FaBars className="w-5 h-5" />
+          <FaBars className="w-4 h-4" />
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-2 space-y-5 overflow-y-auto pb-4 scrollbar-hide">
+      <nav className="flex-1 px-2 pt-4 space-y-5 overflow-y-auto pb-4 scrollbar-hide">
         {menuItems[role]?.map(renderMenuItem)}
       </nav>
     </div>

@@ -11,10 +11,17 @@
   --color-sidebar-bg: #4f5c48;
   --color-sidebar-text: #f6f7f4;
   --color-sidebar-text-muted: rgba(246, 247, 244, 0.72);
-  --font-sidebar: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-sidebar: "DM Sans", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   --color-topbar-bg: #ffffff;
   --color-topbar-border: #e6ece1;
   --color-topbar-title: #2f3b2a;
+  --color-stat-card-border: #f1f5f9;
+  --color-stat-icon-bg: #eef2ff;
+  --color-stat-icon-bg-soft: #ecfdf5;
+  --color-stat-icon-bg-muted: #fffbeb;
+  --color-stat-icon: #6366f1;
+  --color-stat-icon-soft: #059669;
+  --color-stat-icon-muted: #f59e0b;
   --font-app: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   --font-logo: "Anisette Std", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }

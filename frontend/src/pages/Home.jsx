@@ -4,7 +4,7 @@ import { showToast } from '../utils/toast';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { FiUsers, FiFileText, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
 
-const COLORS = ['#10b981', '#ef4444', '#f59e0b', '#6366f1', '#9ca3af'];
+const COLORS = ['#8c9b82', '#ef4444', '#f59e0b', '#6366f1', '#9ca3af'];
 
 function Home({ user }) {
     const [stats, setStats] = useState(null);
@@ -42,43 +42,43 @@ function Home({ user }) {
     if (isSuperAdmin) {
         return (
             <div className="max-w-7xl mx-auto space-y-6">
-                <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-white to-gray-50">
+                <div className="bg-white rounded-2xl shadow-sm p-7 border border-gray-100 flex flex-col md:flex-row justify-between items-center" style={{ fontFamily: "var(--font-sidebar)" }}>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800">Platform Overview</h1>
-                        <p className="mt-2 text-gray-500 font-medium">Monitoring system-wide metrics and company growth.</p>
+                        <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>Platform Overview</h1>
+                        <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>Monitoring system-wide metrics and company growth.</p>
                     </div>
-                    <div className="mt-4 md:mt-0 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
-                        <span className="text-sm font-semibold text-gray-400">{new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    <div className="mt-4 md:mt-0 px-4 py-1.5 rounded-full" style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.08)", border: "1px solid rgba(var(--color-primary-rgb), 0.15)" }}>
+                        <span className="text-xs font-semibold" style={{ color: "var(--color-primary)" }}>{new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <StatCard icon={<FiUsers />} title="Total Companies" value={stats?.overview?.totalCompanies || 0} color="bg-indigo-50 text-indigo-600" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5" style={{ fontFamily: "var(--font-sidebar)" }}>
+                    <StatCard icon={<FiUsers />} title="Total Companies" value={stats?.overview?.totalCompanies || 0} color="bg-indigo-50 text-indigo-500" />
                     <StatCard icon={<FiFileText />} title="Active Admins" value={stats?.overview?.totalAdmins || 0} color="bg-emerald-50 text-emerald-600" />
-                    <StatCard icon={<FiUsers />} title="Global Vendors" value={stats?.overview?.totalVendors || 0} color="bg-amber-50 text-amber-600" />
+                    <StatCard icon={<FiUsers />} title="Global Vendors" value={stats?.overview?.totalVendors || 0} color="bg-amber-50 text-amber-500" />
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-800 mb-6">Recently Registered Companies</h3>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100" style={{ fontFamily: "var(--font-sidebar)" }}>
+                    <h3 className="text-base font-semibold mb-5" style={{ color: "var(--color-text)" }}>Recently Registered Companies</h3>
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="text-left text-xs text-gray-400 font-bold uppercase tracking-wider">
-                                    <th className="pb-4">Company Name</th>
-                                    <th className="pb-4">Plan</th>
-                                    <th className="pb-4">Status</th>
-                                    <th className="pb-4 text-right">Registered On</th>
+                                <tr className="text-left text-xs font-bold uppercase tracking-wider" style={{ color: "var(--color-muted)", borderBottom: "1px solid var(--color-border)" }}>
+                                    <th className="pb-3">Company Name</th>
+                                    <th className="pb-3">Plan</th>
+                                    <th className="pb-3">Status</th>
+                                    <th className="pb-3 text-right">Registered On</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50 text-sm">
-                                {stats?.recentCompanies?.map((company) => (
-                                    <tr key={company.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 font-semibold text-gray-700">{company.name}</td>
-                                        <td className="py-4 text-gray-500">{company.plan}</td>
-                                        <td className="py-4">
-                                            <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded uppercase">{company.status}</span>
+                            <tbody className="text-sm">
+                                {stats?.recentCompanies?.map((company, i, arr) => (
+                                    <tr key={company.id} className="hover:bg-gray-50 transition-colors" style={{ borderBottom: i < arr.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+                                        <td className="py-3.5 font-medium" style={{ color: "var(--color-text)" }}>{company.name}</td>
+                                        <td className="py-3.5" style={{ color: "var(--color-muted)" }}>{company.plan}</td>
+                                        <td className="py-3.5">
+                                            <span className="text-[10px] font-bold px-2 py-1 rounded-full uppercase" style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.12)", color: "var(--color-primary)" }}>{company.status}</span>
                                         </td>
-                                        <td className="py-4 text-right text-gray-400">{new Date(company.date).toLocaleDateString()}</td>
+                                        <td className="py-3.5 text-right" style={{ color: "var(--color-muted)" }}>{new Date(company.date).toLocaleDateString()}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -138,13 +138,13 @@ function Home({ user }) {
     return (
         <div className="max-w-7xl mx-auto space-y-6">
             {/* Welcome Header */}
-            <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-white to-gray-50">
+            <div className="bg-white rounded-2xl shadow-sm p-7 border border-gray-100 flex flex-col md:flex-row justify-between items-center" style={{ fontFamily: "var(--font-sidebar)" }}>
                 <div>
-                    <h1 className="text-3xl font-bold text-[#5e0b15]">Welcome back, {user?.name}!</h1>
-                    <p className="mt-2 text-gray-500 font-medium">Here's what's happening across your vendors today.</p>
+                    <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>Welcome back, {user?.name}!</h1>
+                    <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>Here's what's happening across your vendors today.</p>
                 </div>
-                <div className="mt-4 md:mt-0 px-4 py-2 bg-[#5e0b15]/5 rounded-full border border-[#5e0b15]/10">
-                    <span className="text-sm font-semibold text-[#5e0b15]">{new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <div className="mt-4 md:mt-0 px-4 py-1.5 rounded-full" style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.08)", border: "1px solid rgba(var(--color-primary-rgb), 0.15)" }}>
+                    <span className="text-xs font-semibold" style={{ color: "var(--color-primary)" }}>{new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                 </div>
             </div>
 
@@ -214,7 +214,7 @@ function Home({ user }) {
                 <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-lg font-bold text-gray-800">Recent Document Submissions</h3>
-                        <button className="text-sm font-semibold text-[#5e0b15] hover:underline">View All</button>
+                        <button className="text-sm font-semibold hover:underline" style={{ color: "var(--color-primary)", fontFamily: "var(--font-sidebar)" }}>View All</button>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
@@ -259,13 +259,13 @@ function Home({ user }) {
 
 function StatCard({ icon, title, value, color }) {
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-            <div className={`p-4 rounded-xl text-xl ${color}`}>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4" style={{ fontFamily: "var(--font-sidebar)" }}>
+            <div className={`p-3 rounded-xl text-lg ${color}`}>
                 {icon}
             </div>
             <div>
-                <h4 className="text-sm font-medium text-gray-400">{title}</h4>
-                <p className="text-2xl font-bold text-gray-800">{value}</p>
+                <h4 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--color-muted)" }}>{title}</h4>
+                <p className="text-2xl font-bold mt-0.5" style={{ color: "var(--color-text)" }}>{value}</p>
             </div>
         </div>
     );
