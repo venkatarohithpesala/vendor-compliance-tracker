@@ -8,6 +8,7 @@ import vendorRoutes from "./routes/vendorRoutes.js";
 import complianceRoutes from "./routes/complianceRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import accessRequestRoutes from "./routes/accessRequestRoutes.js";
 
 const app = express();
 
@@ -29,5 +30,6 @@ app.use("/api/vendors", vendorRoutes);
 app.use("/api/compliance", complianceRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/access-requests", accessRequestRoutes);
 
 export default app;

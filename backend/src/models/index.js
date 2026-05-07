@@ -6,6 +6,7 @@ import ComplianceCategory from "./ComplianceCategory.js";
 import ComplianceRequirement from "./ComplianceRequirement.js";
 import VendorCompliance from "./VendorCompliance.js";
 import Document from "./Document.js";
+import AccessRequest from "./AccessRequest.js";
 
 // Define relationships
 const initializeModels = () => {
@@ -109,5 +110,6 @@ export {
   ComplianceRequirement,
   VendorCompliance,
   Document,
+  AccessRequest,
   initializeModels,
 };
