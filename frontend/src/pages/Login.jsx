@@ -1,7 +1,6 @@
 import { useState } from "react";
 import API from "../api/api";
-import { FaLock, FaEnvelope, FaTimes } from 'react-icons/fa';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { Mail, Lock, Eye, EyeOff, X } from 'lucide-react';
 import { showToast } from '../utils/toast';
 
 function Login({ setIsAuthenticated, setUser }) {
@@ -128,7 +127,7 @@ function Login({ setIsAuthenticated, setUser }) {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaEnvelope className="h-5 w-5 text-gray-400" />
+                    <Mail className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
                     type="email"
@@ -148,7 +147,7 @@ function Login({ setIsAuthenticated, setUser }) {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaLock className="h-5 w-5 text-gray-400" />
+                    <Lock className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
                     type={showPassword ? "text" : "password"}
@@ -166,7 +165,7 @@ function Login({ setIsAuthenticated, setUser }) {
                     style={{ color: "var(--color-muted)" }}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
@@ -235,7 +234,7 @@ function Login({ setIsAuthenticated, setUser }) {
       {showContactModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
-          style={{ backgroundColor: "rgba(31, 41, 55, 0.45)", backdropFilter: "blur(4px)" }}
+          style={{ backgroundColor: "rgba(100, 116, 139, 0.15)", backdropFilter: "blur(8px)" }}
           onClick={(e) => { if (e.target === e.currentTarget) setShowContactModal(false); }}
         >
           <div
@@ -266,7 +265,7 @@ function Login({ setIsAuthenticated, setUser }) {
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
                 aria-label="Close"
               >
-                <FaTimes className="h-4 w-4" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 

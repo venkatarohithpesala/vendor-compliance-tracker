@@ -1,4 +1,4 @@
-import { FaBell } from 'react-icons/fa';
+import { FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/api';
 import Sidebar from './Sidebar';
@@ -34,12 +34,7 @@ function Layout({ children, title = "Dashboard", user, setIsAuthenticated }) {
               </div>
 
               {/* Right side items */}
-              <div className="flex items-center gap-6">
-                {/* Notifications */}
-                <button className="transition-colors" style={{ color: "var(--color-muted)" }}>
-                  <FaBell className="h-6 w-6" />
-                </button>
-
+              <div className="flex items-center gap-4">
                 {/* User Menu */}
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--color-primary)" }}>
@@ -51,15 +46,16 @@ function Layout({ children, title = "Dashboard", user, setIsAuthenticated }) {
                     <p className="text-sm font-medium" style={{ color: "var(--color-text)" }}>{user?.name}</p>
                     <p className="text-xs capitalize" style={{ color: "var(--color-muted)" }}>{user?.role}</p>
                   </div>
-                  <button
-                    onClick={handleLogout}
-                    className="ml-4 px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors duration-200"
-                    style={{ backgroundColor: "var(--color-primary)" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary-hover)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary)"; }}
-                  >
-                    Logout
-                  </button>
+                <button
+                  onClick={handleLogout}
+                  className="ml-2 p-2 rounded-lg transition-colors duration-200"
+                  style={{ backgroundColor: "var(--color-primary)", color: "white" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary-hover)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--color-primary)"; }}
+                  title="Logout"
+                >
+                  <FaSignOutAlt className="h-4 w-4" />
+                </button>
                 </div>
               </div>
             </div>
